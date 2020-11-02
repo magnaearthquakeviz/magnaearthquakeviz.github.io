@@ -1,0 +1,7 @@
+#navigation_dot_div{
+    position: absolute;
+    z-index: 1;
+    right: 25px;
+    top: 100px;
+    margin: auto;
+}

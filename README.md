@@ -11,3 +11,6 @@ We hope to create an effective and informative visualisation centered around the
 ## Documentation
 - [Project Proposal](./Documentation/MagnaEarthquakeProject.pdf)
 
+## References
+- GeoJSON files sourced from [glynnbird's github repository](https://github.com/glynnbird/usstatesgeojson). 
+

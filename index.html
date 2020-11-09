@@ -10,6 +10,10 @@ Created by:
     <meta charset="UTF-8">
     <title>Understanding the Magna Earthquake Sequence</title>
 
+    <script src="https://d3js.org/d3.v5.js"></script>
+    <script src="https://d3js.org/d3-array.v2.min.js"></script>
+    <script src="https://d3js.org/d3-geo-projection.v2.js"></script>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
             integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
             crossorigin="anonymous"></script>
@@ -20,6 +24,7 @@ Created by:
           integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
     <link rel="stylesheet" href="styles.css">
     <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+    <script src="test.js" defer></script>
 </head>
 <body data-spy="scroll" data-target=".navbar">
 
@@ -32,13 +37,9 @@ Created by:
     <a class="nav-link btn btn-outline-secondary btn-sm" href="#panel6">Panel 6</a>
 </div>
 
-<div class="container-fluid" id="titleArea">
-    <div class="row d-flex justify-content-center">
-        <h1>Understanding the Magna, Utah Earthquake Sequence</h1>
-    </div>
-    <div class="row d-flex justify-content-center">
-        <h4>Visualisation by: Alysha Armstrong, Andrew Golightly, and Guy Watson</h4>
-    </div>
+<div class="jumbotron" id="titleArea">
+    <h1>Understanding the Magna, Utah Earthquake Sequence</h1>
+    <p>Visualization by: Alysha Armstrong, Andrew Golightly, and Guy Watson</p>
 </div>
 
 <div class="container-fluid">
@@ -49,6 +50,8 @@ Created by:
             </div>
             <div class="col" id="panel1-2">
                 panel1-2
+                <div class="visArea">
+                </div>
             </div>
         </div>
     </section>
@@ -57,6 +60,8 @@ Created by:
         <div class="row no-gutters" id="panel2">
             <div class="col-6" id="panel2-1">
                 panel2-1
+                <div class="visArea">
+                </div>
             </div>
             <div class="col-6" id="panel2-2">
                 panel2-2
@@ -71,6 +76,8 @@ Created by:
             </div>
             <div class="col-6" id="panel3-2">
                 panel3-2
+                <div class="visArea">
+                </div>
             </div>
         </div>
     </section>
@@ -79,6 +86,8 @@ Created by:
         <div class="row no-gutters" id="panel4">
             <div class="col-6" id="panel4-1">
                 panel4-1
+                <div class="visArea">
+                </div>
             </div>
             <div class="col-6" id="panel4-2">
                 panel4-2
@@ -93,6 +102,8 @@ Created by:
             </div>
             <div class="col-6" id="panel5-2">
                 panel5-2
+                <div class="visArea">
+                </div>
             </div>
         </div>
     </section>
@@ -101,9 +112,23 @@ Created by:
         <div class="row no-gutters" id="panel6">
             <div class="col-6" id="panel6-1">
                 panel6-1
+                <div class="visArea">
+                </div>
             </div>
             <div class="col-6" id="panel6-2">
                 panel6-2
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="row no-gutters" id="panel7">
+            <div class="col-6" id="panel7-1">
+                panel7-1
+            </div>
+            <div class="col-6" id="panel7-2">
+                panel7-2
+                <div class="visArea">
+                </div>
             </div>
         </div>
     </section>

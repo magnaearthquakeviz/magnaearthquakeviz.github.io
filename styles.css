@@ -22,3 +22,10 @@ section
     width: 100%;
 }
 
+path
+{
+    stroke: black;
+    stroke-width: 1px;
+    fill: none;
+}
+

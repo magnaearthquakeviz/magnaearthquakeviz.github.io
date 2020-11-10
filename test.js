@@ -1,4 +1,4 @@
-let outline = d3.json('Resources/utah.geojson');
+let outline = d3.json('Resources/Utah_State_Boundary.geojson');
 let quakes = d3.json('Data/earthquake_data.geojson');
 let outline2 = d3.json('Resources/Utah_Lakes_NHD.geojson');
 
@@ -21,7 +21,7 @@ Promise.all([outline, quakes, outline2]).then(combinedData => {
 
     let magnitudeScale = d3.scaleSqrt()
         .domain(d3.extent(magnitudeArray))
-        .range([0.01, 3]);
+        .range([0.01, 5]);
 
     let colorScale = d3.scaleOrdinal()
 
@@ -48,7 +48,7 @@ Promise.all([outline, quakes, outline2]).then(combinedData => {
     svg.append('g')
         .attr('id', 'outlineG')
         .selectAll('path')
-        .data([outlineData.geometry])
+        .data(outlineData.features)
         .join('path')
         .attr('d', path);
 
@@ -76,6 +76,8 @@ Promise.all([outline, quakes, outline2]).then(combinedData => {
         .attr('cx', d => projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[0])
         .attr('cy', d => projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[1])
         .attr('r', d => magnitudeScale(d.properties.mag))
+        .attr('stroke', 'black')
+        .attr('stroke-width', '1px')
         .attr('fill', 'red')
         .on('mouseenter', function() {
             d3.select('#quakeG')
@@ -87,7 +89,7 @@ Promise.all([outline, quakes, outline2]).then(combinedData => {
 
             let date = new Date(selected.datum().properties.time);
 
-            selected.attr('stroke', 'black').attr('stroke-width', '3px');
+            selected.attr('stroke-width', '3px');
             selected.append('title')
                 .text(`Magnitude: ${selected.datum().properties.mag}\nTime: ${date.toUTCString()}`);
         })
@@ -97,19 +99,19 @@ Promise.all([outline, quakes, outline2]).then(combinedData => {
                 .attr('opacity', '1');
 
             let selected = d3.select(this);
-            selected.attr('stroke', 'none').attr('stroke-width', '0px');
+            selected.attr('stroke-width', '1px');
             selected.selectAll('title').remove();
         })
     ;
 
-    svg.append('g')
-        .selectAll('circle')
-        .data([mainQuake])
-        .join('circle')
-        .attr('cx', d => projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[0])
-        .attr('cy', d => projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[1])
-        .attr('r', d => magnitudeScale(d.properties.mag))
-        .attr('fill', 'steelblue');
+    // svg.append('g')
+    //     .selectAll('circle')
+    //     .data([mainQuake])
+    //     .join('circle')
+    //     .attr('cx', d => projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[0])
+    //     .attr('cy', d => projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[1])
+    //     .attr('r', d => magnitudeScale(d.properties.mag))
+    //     .attr('fill', 'steelblue');
 
 
     // // Group for earthquakes

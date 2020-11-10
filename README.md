@@ -12,6 +12,10 @@ We hope to create an effective and informative visualisation centered around the
 - [Project Proposal](./Documentation/MagnaEarthquakeProject.pdf)
 - [Feedback Exercise](./Documentation/feedback_exercise.md)
 
-## References
-- GeoJSON files sourced from [glynnbird's github repository](https://github.com/glynnbird/usstatesgeojson). 
+## Data
 
+## Resources
+- GeoJSON files sourced from [opendata.gis.utah.gov](https://opendata.gis.utah.gov)
+  - [State Boundary](https://opendata.gis.utah.gov/datasets/utah-state-boundary): filtered to ignore the mask and only contain the outline
+  
+  - [Lake Dataset](https://opendata.gis.utah.gov/datasets/utah-lakes-nhd): filtered to only use data categorized as ISMAJOR and INUTAH. 

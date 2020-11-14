@@ -1,14 +1,16 @@
 let outline = d3.json('Resources/Utah_State_Boundary.geojson');
 let quakes = d3.json('Data/earthquake_data.geojson');
 let outline2 = d3.json('Resources/Utah_Lakes_NHD.geojson');
+let faults = d3.json('Data/utah-qfaults_2017.geojson');
 
-Promise.all([outline, quakes, outline2]).then(combinedData => {
+Promise.all([outline, quakes, outline2, faults]).then(combinedData => {
     console.log(combinedData);
 
     let outlineData = combinedData[0];
     let quakeData = combinedData[1];
     let lakeData = combinedData[2];
-
+    let faultData = combinedData[3];
+    
     let width, height;
     width = height = 500;
 
@@ -59,6 +61,29 @@ Promise.all([outline, quakes, outline2]).then(combinedData => {
         .data(lakeData.features)
         .join('path')
         .attr('d', path);
+
+    // Filter the fault data to only use the Wasatch and West Valley faults becuase there are a lot otherwise 
+    faultsFiltered = faultData.features.filter(function(d) {
+            return d.properties.Label.match(/Wasatch/) || d.properties.Label.match(/West Valley/)});
+
+    svg.append('g')
+        .attr('id', 'faultG')
+        .selectAll('path')
+        .data(faultsFiltered)
+        .join('path')
+        .attr('d', path)
+        .attr('id', 'fault')
+        .on('mouseenter', function(){
+            let selected = d3.select(this);
+            selected.attr('stroke-width', '3px');
+            console.log(selected.datum().properties.Label)
+            selected.append('title')
+                .text(`${selected.datum().properties.Label}`);
+        })
+        .on('mouseleave', function () {
+            let selected = d3.select(this);
+            selected.selectAll('title').remove();
+        })
 
     let mainQuake = quakeData.features[d3.maxIndex(quakeData.features, d => d.properties.mag)];
 

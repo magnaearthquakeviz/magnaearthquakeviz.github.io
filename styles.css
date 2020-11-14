@@ -29,3 +29,8 @@ path
     fill: none;
 }
 
+#fault
+{
+    stroke: red;
+    stroke-width: 2px;
+}

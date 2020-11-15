@@ -29,8 +29,16 @@ path
     fill: none;
 }
 
-#fault
+.fault
 {
     stroke: red;
     stroke-width: 2px;
+}
+
+.station{
+    fill: gray;
+}
+
+.station:hover{
+    fill: blue;
 }

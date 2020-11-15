@@ -32,7 +32,13 @@ path
 .fault
 {
     stroke: red;
-    stroke-width: 2px;
+    stroke-width: 3px;
+    opacity: 0.8;
+}
+
+.fault:hover
+{
+    stroke-width: 5px;
 }
 
 .station{
@@ -41,4 +47,8 @@ path
 
 .station:hover{
     fill: blue;
+}
+
+#googleMap {
+    height: 100%;
 }

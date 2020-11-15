@@ -64,29 +64,7 @@ Promise.all([outline, quakes, outline2, faults, stations]).then(combinedData => 
         .join('path')
         .attr('d', path);
 
-    // Filter the fault data to only use the Wasatch and West Valley faults becuase there are a lot otherwise 
-    let faultsFiltered = faultData.features.filter(function(d) {
-            return d.properties.Label.match(/Wasatch/) || d.properties.Label.match(/West Valley/)});
-
-    svg.append('g')
-        .attr('id', 'faultG')
-        .selectAll('path')
-        .data(faultsFiltered)
-        .join('path')
-        .attr('d', path)
-        .attr('class', 'fault')
-        .on('mouseenter', function(){
-            let selected = d3.select(this);
-            selected.attr('stroke-width', '3px');
-            selected.append('title')
-                .text(`${selected.datum().properties.Label}`);
-        })
-        .on('mouseleave', function () {
-            let selected = d3.select(this);
-            selected.selectAll('title').remove();
-        });
-
-    // triangle symbol for the seismometers 
+            // triangle symbol for the seismometers 
     var triangle = d3.symbol().type(d3.symbolTriangle).size(30)
 
     // filter the station data to only use UU stations in Utah 
@@ -113,6 +91,26 @@ Promise.all([outline, quakes, outline2, faults, stations]).then(combinedData => 
             selected.attr('stroke-width', '3px');
             selected.append('title')
             .text(`${selected.datum().properties.name}\nDistance: ${selected.datum().properties.distance} km\nIntensity: ${selected.datum().properties.intensity}`);
+        })
+        .on('mouseleave', function () {
+            let selected = d3.select(this);
+            selected.selectAll('title').remove();
+        });
+    // Filter the fault data to only use the Wasatch and West Valley faults becuase there are a lot otherwise 
+    let faultsFiltered = faultData.features.filter(function(d) {
+            return d.properties.Label.match(/Wasatch/) || d.properties.Label.match(/West Valley/)});
+
+    svg.append('g')
+        .attr('id', 'faultG')
+        .selectAll('path')
+        .data(faultsFiltered)
+        .join('path')
+        .attr('d', path)
+        .attr('class', 'fault')
+        .on('mouseenter', function(){
+            let selected = d3.select(this);
+            selected.append('title')
+                .text(`${selected.datum().properties.Label}`);
         })
         .on('mouseleave', function () {
             let selected = d3.select(this);
@@ -181,4 +179,19 @@ Promise.all([outline, quakes, outline2, faults, stations]).then(combinedData => 
     //     .join('path')
     //     .attr('d', path(quakeData));
 
+    d3.select('#panel2-1 > div.visArea')
+        .style('height', '500px')
+        .append('div').attr('id','googleMap')
+
+    let mapContainer = d3.select('#googleMap').node()
+
+    let options = {
+        center:{lat: 40.751, lng: -112.078},
+        zoom: 10, 
+        mapTypeId: 'terrain' }
+    
+    let map = new google.maps.Map(mapContainer, options)
+
+    let overlay = new google.maps.OverlayView();
+    
 });

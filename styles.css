@@ -52,3 +52,14 @@ path
 #googleMap {
     height: 100%;
 }
+
+.map-quakes{
+    position: absolute;
+}
+
+.map-quakes svg {
+    width: 60px;
+    height: 20px;
+    font: 10px sans-serif;
+    position: absolute;
+}

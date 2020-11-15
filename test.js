@@ -187,11 +187,93 @@ Promise.all([outline, quakes, outline2, faults, stations]).then(combinedData => 
 
     let options = {
         center:{lat: 40.751, lng: -112.078},
-        zoom: 10, 
+        zoom: 10.5, 
         mapTypeId: 'terrain' }
     
     let map = new google.maps.Map(mapContainer, options)
 
     let overlay = new google.maps.OverlayView();
+
+    // Add the container when the overlay is added to the map.
+    overlay.onAdd = function () {
+
+        //to see all the available panes;
+        console.log(this.getPanes());
+
+        let layer = d3.select(this.getPanes().overlayMouseTarget).append("div")
+            .attr("class", "map-quakes");
+
+        overlay.onRemove = function () {
+            d3.select('.map-quakes').remove();
+        };
+
+        overlay.draw = function () {
+
+            let projection = this.getProjection(),
+                padding = 10;
+
+
+            // Draw each marker as a separate SVG element.
+            // We could use a single SVG, but what size would it have?
+            let marker = layer.selectAll('svg')
+                .data(quakeData.features);
+
+            let markerEnter = marker.enter().append("svg");
+
+            // add the circle
+            markerEnter.append("circle");
+
+            marker.exit().remove();
+
+            marker = marker.merge(markerEnter);
+
+            marker
+                .each(transform)
+                .attr("class", "marker");
+
+            marker.selectAll('circle')
+                .attr('cx', padding)
+                .attr('cy', padding)
+                .attr('r', d => magnitudeScale(d.properties.mag))
+                .attr('stroke', 'black')
+                .attr('stroke-width', '1px')
+                .attr('fill', 'red')
+                .on('mouseenter', function() {
+                    d3.select('#quakeG')
+                        .selectAll('circle')
+                        .attr('opacity', '0.5');
+        
+                    let selected = d3.select(this);
+        
+        
+                    let date = new Date(selected.datum().properties.time);
+        
+                    selected.attr('stroke-width', '3px');
+                    selected.append('title')
+                        .text(`Magnitude: ${selected.datum().properties.mag}\nTime: ${date.toUTCString()}`);
+                })
+                .on('mouseleave', function () {
+                    d3.select('#quakeG')
+                        .selectAll('circle')
+                        .attr('opacity', '1');
+        
+                    let selected = d3.select(this);
+                    selected.attr('stroke-width', '1px');
+                    selected.selectAll('title').remove();
+                })
+    
+            //transforms the markers to the right
+            // lat / lng using the projection from google maps
+                function transform(d) {
+                    d = new google.maps.LatLng(+d.geometry.coordinates[1], +d.geometry.coordinates[0]);
+                    d = projection.fromLatLngToDivPixel(d);
+                    return d3.select(this)
+                        .style("left", (d.x - padding) + "px")
+                        .style("top", (d.y - padding) + "px");
+                }
+        }
+    }
+    // Bind our overlay to the map…
+    overlay.setMap(map);
     
 });

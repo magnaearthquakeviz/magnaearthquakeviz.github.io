@@ -22,6 +22,9 @@ Promise.all([outline, quakes, outline2, faults, stations]).then(combinedData => 
     map21.addMainShock(svg21)
 
     // add map for the second panel on the intensity of the mainshock
-    let map31 = new Maps(combinedData, 3, 2)
-    map31.drawGoogleMap();
+    let map32 = new Maps(combinedData, 3, 2)
+    map32.drawGoogleMap();
+
+    let scatter41 = new Scatter(combinedData[1], 4, 1)
+    scatter41.drawPlot('time', 'mag')
 });

@@ -63,3 +63,7 @@ path
     font: 10px sans-serif;
     position: absolute;
 }
+
+h2 {
+    font-size: 22px;
+}

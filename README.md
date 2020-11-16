@@ -13,6 +13,10 @@ We hope to create an effective and informative visualisation centered around the
 - [Feedback Exercise](./Documentation/feedback_exercise.md)
 
 ## Data
+- Earthquake data from the USGS
+- Waveform Data from IRIS
+- Intensity and Station data from USGS 
+- Fault Data from the Utah Geologic Survey
 
 ## Resources
 - GeoJSON files sourced from [opendata.gis.utah.gov](https://opendata.gis.utah.gov)

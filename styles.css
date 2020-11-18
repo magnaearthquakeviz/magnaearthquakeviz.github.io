@@ -4,6 +4,11 @@
     right: 0px;
     top: 33%;
     margin: auto;
+    opacity: 33%;
+}
+
+#panel_navigator:hover{
+    opacity: 100%;
 }
 
 body{

@@ -1,0 +1,14 @@
+Jarring transition from the google maps to other maps
+  Could be fixed with stylizing? I'm not quite sure how that would work
+
+Use more anddifferent encodings here: use colors to represent different colors or categories
+  This will make this more enticing for the user
+
+Add more interactivity for each panel
+  we can integrate it with our storytelling: we can highlight text or have text clicks highlight
+  parts of the visualization
+
+We are only two weeks away: make sure to manage time
+Use the TAs for help with questions or debugging
+
+

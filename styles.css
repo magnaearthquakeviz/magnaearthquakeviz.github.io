@@ -5,6 +5,7 @@
     top: 33%;
     margin: auto;
     opacity: 33%;
+    transition: opacity 0.5s;
 }
 
 #panel_navigator:hover{

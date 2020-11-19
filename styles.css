@@ -16,6 +16,10 @@ body{
     position: relative;
 }
 
+cite{
+    font-style: normal;
+}
+
 #titleArea
 {
     background-color: lightgrey;

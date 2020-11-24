@@ -96,7 +96,7 @@ Promise.all([outline, quakes, outline2, faults, stations]).then(combinedData => 
             let selected = d3.select(this);
             selected.selectAll('title').remove();
         });
-    // Filter the fault data to only use the Wasatch and West Valley faults becuase there are a lot otherwise 
+    // Filter the fault data to only use the Wasatch and West Valley faults because there are a lot otherwise
     let faultsFiltered = faultData.features.filter(function(d) {
             return d.properties.Label.match(/Wasatch/) || d.properties.Label.match(/West Valley/)});
 
@@ -119,7 +119,7 @@ Promise.all([outline, quakes, outline2, faults, stations]).then(combinedData => 
 
     let mainQuake = quakeData.features[d3.maxIndex(quakeData.features, d => d.properties.mag)];
 
-    // Selects the events the day of and
+    // Selects the events the day of
     let quakeDataFiltered = quakeData.features.filter(d => (d.properties.time > 1584489600000 && d.properties.time < 1584576000000) && d.properties.mag > 2.0);
 
     console.log(quakeDataFiltered);

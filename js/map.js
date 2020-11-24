@@ -119,7 +119,7 @@ class Maps{
     }
 
     addEarthquakes(svg){
-        // Selects the events the day of and
+        // Selects the events the day of
         let quakeDataFiltered = this.quakeData.features.filter(d => (d.properties.time > 1584489600000 && d.properties.time < 1584576000000) && d.properties.mag > 2.0);
 
         console.log(quakeDataFiltered);

@@ -24,11 +24,18 @@ Created by:
           integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
     <link rel="stylesheet" href="styles.css">
     <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
-     <!--<script src="test.js" defer></script>-->
+    <!--<script src="test.js" defer></script>-->
     <script src="js/script.js" defer></script>
-    <script src="js/map.js" defer></script> 
-    <script src="js/scatter.js" defer></script> 
+    <script src="js/map.js" defer></script>
+    <script src="js/scatter.js" defer></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdZBzeAmb_E28mKtSIVFHEA9xSJoIGzM0"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.css"
+          integrity="sha512-XXtRBFtk/QfR8GEWwQPYjrQBHQwjidXg0wo8HJi9YOaFycWqd2uWkjJoAyx8Mb/+H8uhvmf70EAIxDnQxrwrvw=="
+          crossorigin="anonymous"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.js"
+            integrity="sha512-yXELjsAYxGohZYJmy7nd/cYafOZDUR61poJmF1BNpl6B2em0rVCLDMd/2hwtYAEeXE13MaiNc598Zl8kEj3lPQ=="
+            crossorigin="anonymous"></script>
 </head>
 <body data-spy="scroll" data-target=".navbar">
 
@@ -45,21 +52,26 @@ Created by:
     <h1>Understanding the Magna, Utah Earthquake Sequence</h1>
     <p>Visualization by: Alysha Armstrong, Andrew Golightly, and Guy Watson</p>
 </div>
+<div id="sliderTest">
+
+</div>
 
 <div class="container-fluid">
     <section>
         <div class="row no-gutters" id="panel1">
             <div class="col" id="panel1-1">
-                panel1-1
                 <div class="textArea">
-                    <h2>On March 18, 2020 a magnitude 5.7 earthquake occurred near Magna, UT <cite><a href="#references">[1]</a></cite></h2>
-                    <ul> 
+                    <h2>On March 18, 2020 a magnitude 5.7 earthquake occurred near Magna, UT <cite><a
+                            href="#references">[1]</a></cite></h2>
+                    <ul>
                         <li>This is the largest earthquake occurring in Utah to be recorded on seismic instruments.</li>
-                        <li>There were no serious injuries or fatalities, but estimated damage is greater than $150 million.</li>
+                        <li>There were no serious injuries or fatalities, but estimated damage is greater than $150
+                            million.
+                        </li>
                         <li>It occurred on the Salt Lake City segment of the Wasatch Fault.</li>
                     </ul>
                     <h2>Earthquakes are a serious hazard along the Wasatch Fault and it is important to have a general
-                    understanding of earthquake science.</h2>
+                        understanding of earthquake science.</h2>
                 </div>
             </div>
             <div class="col" id="panel1-2">
@@ -73,31 +85,35 @@ Created by:
     <section>
         <div class="row no-gutters" id="panel2">
             <div class="col-6" id="panel2-1">
-                panel2-1
                 <div class="visArea">
                 </div>
             </div>
             <div class="col-6" id="panel2-2">
-                panel2-2
                 <div class="textArea">
                     <h2>What does an earthquake feel like?</h2>
                     <ul>
                         <li>Earthquakes generally get weaker the farther away from the source you are</li>
                         <li>Intensity is used to describe local shaking and it is determined by damage and experiences
-                        of those who felt it.</li>
+                            of those who felt it.
+                        </li>
                         <li>The most common scale is the Modified Mercalli Intensity scale, which ranges from
-                        category I to category XII. Here are some examples:
+                            category I to category XII. Here are some examples:
                             <ul>
                                 <li>I - Not felt - Not felt except by very few under the right conditions.</li>
                                 <li>V - Moderate - Felt by most. Some dishes and windows are broken.</li>
                                 <li>VIII - Severe - Considerable damage to ordinary buildings. Fall of chimneys and
-                                factory stacks. Heavy furniture overturned.</li>
-                                <li>IX - Violent - Considerable damage to specially designed buildings. Liquefaction occurs.</li>
+                                    factory stacks. Heavy furniture overturned.
+                                </li>
+                                <li>IX - Violent - Considerable damage to specially designed buildings. Liquefaction
+                                    occurs.
+                                </li>
                                 <li>XI - Catastrophe - Few, if any, structures remain standing.</li>
                                 <li>XII - Enormous Catastrophe - Damage is total.</li>
-                            </ul></li>
+                            </ul>
+                        </li>
                         <li>Look at the intensity recorded by the different seismometers (triangles) operated by the
-                        University of Utah Seismograph Stations by hovering over them!</li>
+                            University of Utah Seismograph Stations by hovering over them!
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -107,22 +123,24 @@ Created by:
     <section>
         <div class="row no-gutters" id="panel3">
             <div class="col-6" id="panel3-1">
-                panel3-1
                 <div class="textArea">
                     <h2>Aftershocks</h2>
                     <ul>
-                        <li>Aftershocks are named because they are just that, shocks that come after the main earthquake.</li>
+                        <li>Aftershocks are named because they are just that, shocks that come after the main
+                            earthquake.
+                        </li>
                         <li>Both the power and the number of the aftershocks will decrease as time goes on.</li>
-                        <li>Having an earthquake does not necessarily release enough stress to prevent a larger earthquake
-                        later. Having an earthquake actually slightly increases the chance of a larger earthquake
-                        happening in the next couple of days by around 5%. Think of this like a pencil splintering
-                        before it cracks when you bend it too far. If this situation is the case, the first quake is
-                        known as a foreshock.</li>
+                        <li>Having an earthquake does not necessarily release enough stress to prevent a larger
+                            earthquake
+                            later. Having an earthquake actually slightly increases the chance of a larger earthquake
+                            happening in the next couple of days by around 5%. Think of this like a pencil splintering
+                            before it cracks when you bend it too far. If this situation is the case, the first quake is
+                            known as a foreshock.
+                        </li>
                     </ul>
                 </div>
             </div>
             <div class="col-6" id="panel3-2">
-                panel3-2
                 <div class="visArea">
                 </div>
             </div>
@@ -132,25 +150,32 @@ Created by:
     <section>
         <div class="row no-gutters" id="panel4">
             <div class="col-6" id="panel4-1">
-                panel4-1
                 <div class="visArea">
                 </div>
             </div>
             <div class="col-6" id="panel4-2">
-                panel4-2
                 <div class="textArea">
-                    <h2>Magnitudes are a way to describe how big an earthquake is. They generally decrease with time.</h2>
+                    <h2>Magnitudes are a way to describe how big an earthquake is. They generally decrease with
+                        time.</h2>
                     <ul>
                         <li>Magnitude is a logarithmic scale! This means that a magnitude 2 earthquake is ten times as
-                        powerful as a magnitude 1 earthquake [cite], and a magnitude 3 is ten times more powerful than a
-                        magnitude 2. So while the difference between 2 and 5.7 might not seem like that much, a magnitude
-                        5.7 can shake buildings miles away, while a magnitude 2 can barely be felt at the same distance.</li>
+                            powerful as a magnitude 1 earthquake [cite], and a magnitude 3 is ten times more powerful
+                            than a
+                            magnitude 2. So while the difference between 2 and 5.7 might not seem like that much, a
+                            magnitude
+                            5.7 can shake buildings miles away, while a magnitude 2 can barely be felt at the same
+                            distance.
+                        </li>
                         <li>Things aren't so simple though: it is possible for an earthquake to have several different
-                        magnitude estimates depending on the waves and frequencies used in the calculation [cite]. </li>
-                        <li>The largest earthquake ever recorded was a magnitude 9.5 [cite]! This earthquake had a rupture
-                        area that was around 1000 km long and 150 km wide, though. Since a fault line that big doesn't exist
-                        in Utah, and since earthquake magnitude is limited by the area available for rupture, Utah
-                        won't be seeing an earthquake on that magnitude for quite some time [cite].</li>
+                            magnitude estimates depending on the waves and frequencies used in the calculation [cite].
+                        </li>
+                        <li>The largest earthquake ever recorded was a magnitude 9.5 [cite]! This earthquake had a
+                            rupture
+                            area that was around 1000 km long and 150 km wide, though. Since a fault line that big
+                            doesn't exist
+                            in Utah, and since earthquake magnitude is limited by the area available for rupture, Utah
+                            won't be seeing an earthquake on that magnitude for quite some time [cite].
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -160,21 +185,23 @@ Created by:
     <section>
         <div class="row no-gutters" id="panel5">
             <div class="col-6" id="panel5-1">
-                panel5-1
                 <div class="textArea">
                     <h2>Earthquake Depth</h2>
                     <ul>
                         <il>Earthquake depth in Utah is usually between 5 and 25 kilometers. [find source] [cite]</il>
                         <il>The depth of an earthquake can affect how the shaking feels. A deeper earthquake is less
-                        intense but is felt farther away. A shallower earthquake is more intense but shakes a smaller area.
-                        Think of this like a flashlight: the closer a flashlight is to a table, the brighter and smaller
-                        the radius of the light is. As you pull the flashlight away from the table it gets dimmer and
-                        the radius gets larger.[cite]</il>
+                            intense but is felt farther away. A shallower earthquake is more intense but shakes a
+                            smaller area.
+                            Think of this like a flashlight: the closer a flashlight is to a table, the brighter and
+                            smaller
+                            the radius of the light is. As you pull the flashlight away from the table it gets dimmer
+                            and
+                            the radius gets larger.[cite]
+                        </il>
                     </ul>
                 </div>
             </div>
             <div class="col-6" id="panel5-2">
-                panel5-2
                 <div class="visArea">
                 </div>
             </div>
@@ -184,12 +211,10 @@ Created by:
     <section>
         <div class="row no-gutters" id="panel6">
             <div class="col-6" id="panel6-1">
-                panel6-1
                 <div class="visArea">
                 </div>
             </div>
             <div class="col-6" id="panel6-2">
-                panel6-2
                 <div class="textArea">
                     <h2>Explore the data!</h2>
                 </div>
@@ -199,7 +224,6 @@ Created by:
     <section>
         <div class="row no-gutters" id="panel7">
             <div class="col-6" id="panel7-1">
-                panel7-1
                 <div class="textArea" id="references">
                     <h2>References</h2>
                     <ul>
@@ -208,7 +232,6 @@ Created by:
                 </div>
             </div>
             <div class="col-6" id="panel7-2">
-                panel7-2
                 <div class="visArea">
                 </div>
             </div>

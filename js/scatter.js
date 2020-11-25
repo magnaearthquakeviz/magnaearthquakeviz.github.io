@@ -9,7 +9,6 @@ class PlotData {
     }
 }
 
-
 class Scatter {
     constructor(quakeData, row, column) {
         this.width = 750;
@@ -19,6 +18,7 @@ class Scatter {
 
         this.quakeData = quakeData;
         this.plotData = this.setPlotData(quakeData);
+
         this.margin = 40;
 
         this.svg = d3.select(this.panel + ' > div.visArea')
@@ -44,6 +44,10 @@ class Scatter {
             .style('text-anchor', 'middle')
             .attr('transform', `translate(-30, ${this.vizHeight / 2}), rotate(270)`);
 
+        this.transition = d3.transition()
+            .duration(750)
+            .ease(d3.easeCubicOut);
+
         //this.addDropdowns();
 
         this.addSliders(['time', 'mag']);
@@ -58,6 +62,72 @@ class Scatter {
         })
 
         return data;
+    }
+
+    // Only gets maximum magnitude event for the day.
+    getMaxEvents(data) {
+        let maxArr = [];
+
+        let grouped = d3.group(data, d => {
+            let date = new Date(d.properties.time);
+            return `${date.getUTCDay()}_${date.getUTCMonth()}_${date.getUTCFullYear()}`;
+        });
+
+        for (let key of grouped.keys()) {
+            let max = null;
+
+            for (let point of grouped.get(key)) {
+                if (max && max.properties.mag < point.properties.mag) {
+                    max = point;
+                } else {
+                    max = point;
+                }
+            }
+
+            let time = new Date(max.properties.time);
+            let coords = max.geometry.coordinates;
+            let mag = max.properties.mag;
+
+            maxArr.push(new PlotData(time, coords[0], coords[1], coords[2], mag));
+        }
+        return maxArr;
+    }
+
+    // Averages data by day
+    groupDataByTime(data) {
+        let averaged = [];
+
+        let grouped = d3.group(data, d => {
+            let date = new Date(d.properties.time);
+            return `${date.getUTCDay()}_${date.getUTCMonth()}_${date.getUTCFullYear()}`;
+        });
+
+        for (let key of grouped.keys()) {
+            let counter = 0;
+            let avgTime = 0;
+            let avgMag = 0;
+            let avgLon = 0;
+            let avgLat = 0;
+            let avgDep = 0;
+            for (let point of grouped.get(key)) {
+                counter++;
+                avgTime += point.properties.time;
+                avgMag += point.properties.mag;
+                avgLon += point.geometry.coordinates[0];
+                avgLat += point.geometry.coordinates[1];
+                avgDep += point.geometry.coordinates[2];
+            }
+
+            avgTime = Math.ceil(avgTime / counter);
+            avgMag /= counter;
+            avgLon /= counter;
+            avgLat /= counter;
+            avgDep /= counter;
+
+            averaged.push(new PlotData(new Date(avgTime), avgLon, avgLat, avgDep, avgMag));
+        }
+
+        return averaged;
     }
 
     // Add slider in conjunction with dropdown.
@@ -90,8 +160,8 @@ class Scatter {
     }
 
     // Add sliders separate from dropdowns.
-    // Basically hardcoded to have time and magnitude sliders.
-    // This hardcoding is reinforced in the updatePlotRanges function.
+    // Hardcoded to have time and magnitude sliders, but
+    // hopefully this will change in the near future.
     addSliders(sliderValues) {
         let that = this;
 
@@ -120,16 +190,49 @@ class Scatter {
             let min = d3.min(data);
             let max = d3.max(data);
 
-            let slider = noUiSlider.create(sliderDiv,
+            noUiSlider.create(sliderDiv,
                 {
                     start: [min, max],
                     connect: true,
-                    //tooltips: [true, true],
+                    behaviour: 'drag',
                     range: {
                         'min': min,
                         'max': max
-                    }
+                    },
+                    step: 0.01,
+                    margin: 0.1
                 });
+
+            let dateFormatter = {
+                to: function (value) {
+                    let date = new Date(value);
+                    return d3.timeFormat('%-m/%-d %-H:%M')(date);
+                },
+                from: function (value) {
+                    return Date.parse(value);
+                }
+            };
+
+            if (sliderValue === 'time') {
+                sliderDiv.noUiSlider.updateOptions({
+                    // Limit step to a minute if the scale is time
+                    step: 1000 * 60,
+                    // Limit min width to a day
+                    margin: 1000 * 60 * 60 * 24
+                });
+            }
+
+            sliderDiv.noUiSlider.on('start', function (values, handle) {
+                if (sliderValue === 'time') {
+                    sliderDiv.noUiSlider.updateOptions({
+                        tooltips: [dateFormatter, dateFormatter]
+                    })
+                } else {
+                    sliderDiv.noUiSlider.updateOptions({
+                        tooltips: true
+                    });
+                }
+            });
 
             sliderDiv.noUiSlider.on('set', function (values, handle) {
                 let sliders = d3.select(that.panel).selectAll('div.sliderDiv');
@@ -137,47 +240,19 @@ class Scatter {
                 let ranges = [];
 
                 for (let node of sliders.nodes()) {
-                    //console.log(node.noUiSlider.get());
                     ranges.push(node.noUiSlider.get());
                 }
 
-                that.updatePlotRanges('time', 'mag', 'mag', ranges);
-                // console.log(this.get());
-                // console.log('Update');
-                // console.log(values, handle);
-            })
+                that.drawPlot('time', 'mag', 'depth', ranges);
+            });
+
+            sliderDiv.noUiSlider.on('end', function (values, handle) {
+                sliderDiv.noUiSlider.updateOptions({
+                    tooltips: false
+                });
+            });
         }
 
-    }
-
-    // Generates scales given the indicators. Returns [xScale, yScale, cScale].
-    generateScales(xIndicator, yIndicator, cIndicator) {
-        let xData = this.plotData.map(d => d[xIndicator]);
-        let xMin = d3.min(xData);
-        let xMax = d3.max(xData);
-        let xScale = null;
-        if (xIndicator === 'time') {
-            xScale = d3.scaleTime().domain([xMin, xMax]).range([0, this.vizWidth]); //.nice();
-        } else {
-            xScale = d3.scaleLinear().domain([xMin, xMax]).range([0, this.vizWidth]); //.nice();
-        }
-
-        let yData = this.plotData.map(d => d[yIndicator]);
-        let yMin = d3.min(yData);
-        let yMax = d3.max(yData);
-        let yScale = null;
-        if (yIndicator === 'time') {
-            yScale = d3.scaleTime().domain([yMin, yMax]).range([this.vizHeight, 0]); //.nice();
-        } else {
-            yScale = d3.scaleLinear().domain([yMin, yMax]).range([this.vizHeight, 0]); // .nice();
-        }
-
-        let cData = this.plotData.map(d => d[cIndicator]);
-        let cMin = d3.min(cData);
-        let cMax = d3.max(cData);
-        let cScale = d3.scaleSqrt().domain([cMin, cMax]).range([1, 4]);
-
-        return [xScale, yScale, cScale];
     }
 
     // Used to add dropdowns to set circle size and axis
@@ -278,79 +353,74 @@ class Scatter {
         })
     }
 
-    drawPlot(xIndicator, yIndicator, cIndicator) {
-        let scales = this.generateScales(xIndicator, yIndicator, cIndicator);
-        let xScale = scales[0];
-        let yScale = scales[1];
-        let cScale = scales[2];
+    drawPlot(xIndicator, yIndicator, cIndicator, ranges = null) {
+        let xData = this.plotData.map(d => d[xIndicator]);
+        let yData = this.plotData.map(d => d[yIndicator]);
 
-        // Update axis labels
+        let xMin, yMin, xMax, yMax, xScale, yScale;
+
+        if (ranges) {
+            let xRanges = ranges[0];
+            xMin = xRanges[0];
+            xMax = xRanges[1];
+            let yRanges = ranges[1];
+            yMin = yRanges[0];
+            yMax = yRanges[1];
+        } else {
+            xMin = d3.min(xData);
+            xMax = d3.max(xData);
+            yMin = d3.min(yData);
+            yMax = d3.max(yData);
+        }
+
+        if (xIndicator === 'time') {
+            xScale = d3.scaleTime().domain([xMin, xMax]).range([0, this.vizWidth]); //.nice();
+        } else {
+            xScale = d3.scaleLinear().domain([xMin, xMax]).range([0, this.vizWidth]); //.nice();
+        }
+
+        if (yIndicator === 'time') {
+            yScale = d3.scaleTime().domain([yMin, yMax]).range([this.vizHeight, 0]); //.nice();
+        } else {
+            yScale = d3.scaleLinear().domain([yMin, yMax]).range([this.vizHeight, 0]); // .nice();
+        }
+
+        let cData = this.plotData.map(d => d[cIndicator]);
+        let cMin = d3.min(cData);
+        let cMax = d3.max(cData);
+        let cScale = d3.scaleSqrt().domain([cMin, cMax]).range([1, 4]);
+
         this.xAxisLabel.text(xIndicator);
         this.yAxisLabel.text(yIndicator);
 
-        // Update axes
+        let timeFormat = d3.timeFormat('%-m/%-d');
+        let xAxisCall = d3.axisBottom(xScale);
+        let yAxisCall = d3.axisLeft(yScale);
+
         if (xIndicator === 'time') {
-            this.xAxis.call(d3.axisBottom(xScale).tickFormat(d3.timeFormat('%b')));
-        } else {
-            this.xAxis.call(d3.axisBottom(xScale));
+            xAxisCall.tickFormat(timeFormat);
+            //this.xAxis.call(d3.axisBottom(xScale).tickFormat(timeFormat));
         }
         if (yIndicator === 'time') {
-            this.yAxis.call(d3.axisLeft(yScale).tickFormat(d3.timeFormat('%b')));
-        } else {
-            this.yAxis.call(d3.axisLeft(yScale));
+            yAxisCall.tickFormat(timeFormat);
         }
 
-        this.svgGroup.attr("transform", "translate(" + this.margin + "," + this.margin + ")")
+        this.xAxis.call(xAxisCall).transition(this.transition);
+        this.yAxis.call(yAxisCall).transition(this.transition);
 
-        this.svgGroup.selectAll("circle")
-            .data(this.plotData)
-            .join("circle")
-            .attr('cx', d => xScale(d[xIndicator]))
-            .attr('cy', d => yScale(d[yIndicator]))
-            .attr('r', d => cScale(d[cIndicator]))
-    }
+        this.svgGroup.attr("transform", `translate(${this.margin}, ${this.margin})`);
 
-    updatePlotRanges(xIndicator, yIndicator, cIndicator, ranges) {
-        //this.drawPlot(xIndicator, yIndicator, cIndicator);
-
-        let scales = this.generateScales(xIndicator, yIndicator, cIndicator);
-        let xScale = scales[0];
-        let yScale = scales[1];
-        let cScale = scales[2];
-
-        // Update axis labels
-        this.xAxisLabel.text(xIndicator);
-        this.yAxisLabel.text(yIndicator);
-
-        // Update axes
-        if (xIndicator === 'time') {
-            this.xAxis.call(d3.axisBottom(xScale).tickFormat(d3.timeFormat('%b')));
-        } else {
-            this.xAxis.call(d3.axisBottom(xScale));
-        }
-        if (yIndicator === 'time') {
-            this.yAxis.call(d3.axisLeft(yScale).tickFormat(d3.timeFormat('%b')));
-        } else {
-            this.yAxis.call(d3.axisLeft(yScale));
-        }
-
-        let rangeX = ranges[0];
-        let rangeY = ranges[1];
-
-        let filteredData = this.plotData;
-
-        filteredData = filteredData.filter(d => {
-            let xData = Date.parse(d[xIndicator]);
-            let yData = d[yIndicator];
-            return ((xData >= rangeX[0] && xData <= rangeX[1])
-                && (yData >= rangeY[0] && yData <= rangeY[1]));
-        });
-
-        console.log(filteredData);
-
-        this.svgGroup.selectAll("circle")
-            .data(filteredData)
-            .join("circle")
+        this.svgGroup.selectAll('circle')
+            .data(this.plotData.filter(d => {
+                let xVal = d[xIndicator];
+                let yVal = d[yIndicator];
+                return ((xVal >= xMin)
+                    && (xVal <= xMax)
+                    && (yVal >= yMin)
+                    && (yVal <= yMax));
+            }))
+            .join('circle')
+            .transition(this.transition)
             .attr('cx', d => xScale(d[xIndicator]))
             .attr('cy', d => yScale(d[yIndicator]))
             .attr('r', d => cScale(d[cIndicator]));

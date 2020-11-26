@@ -25,6 +25,12 @@ Promise.all([outline, quakes, outline2, faults, stations]).then(combinedData => 
     let map32 = new Maps(combinedData, 3, 2)
     map32.drawGoogleMap();
 
+    let axisOptions = ['time', 'mag', 'depth', 'lat', 'lon'];
+
     let scatter41 = new Scatter(combinedData[1], 4, 1);
-    scatter41.drawPlot('time', 'mag', 'mag');
+    scatter41.drawPlot('time', 'mag', 'depth');
+
+    //scatter41.addDropdowns(axisOptions);
+    //scatter41.addSliders(['time', 'mag']);
+    scatter41.addDropdownAndSlider(axisOptions);
 });

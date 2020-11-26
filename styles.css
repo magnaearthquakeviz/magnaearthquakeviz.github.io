@@ -81,3 +81,11 @@ path
 h2 {
     font-size: 22px;
 }
+
+#panel4-1 circle
+{
+    fill: cadetblue;
+    opacity: 0.4;
+    stroke: black;
+    stroke-width: 0.25px;
+}

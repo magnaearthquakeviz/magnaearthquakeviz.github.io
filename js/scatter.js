@@ -1,4 +1,13 @@
+/**Data structure for the data associated with an indiviudal earthquake */
 class PlotData {
+    /**
+     * 
+     * @param time - Origin time of the earthquake
+     * @param lat - Latitude of the earthquake hypocenter
+     * @param lon - Longitude of the earthquake hypocenter
+     * @param depth - Depth of the earthquake hypocenter
+     * @param mag - Magnitude of the earthquake 
+     */
     constructor(time, lat, lon, depth, mag) {
         this.time = time
         this.lat = lat
@@ -8,7 +17,15 @@ class PlotData {
     }
 }
 
+/**Class represents the scatter plot view. */
 class Scatter {
+    /**
+     * Creates a new Scatter Object for plotting a 2D scatter plot of earthquake information 
+     * 
+     * @param quakeData - geoJson file of earthquake information
+     * @param row - The row on the website to draw the plot
+     * @param column- The column on the website to draw the plot 
+     */
     constructor(quakeData, row, column) {
         this.width = 750;
         this.height = 500;
@@ -62,6 +79,10 @@ class Scatter {
         }
     }
 
+    /**
+     * Store the individal earthquake data as PlotData objects for easier access
+     * @param data - Data passed in. Should follow the data format specified by quakeData.
+     */
     setPlotData(data) {
         data = data.features.map(d => {
             let coords = d.geometry.coordinates;

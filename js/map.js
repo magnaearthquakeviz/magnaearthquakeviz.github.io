@@ -1,5 +1,16 @@
-
+/**
+ * Class representing the map view. 
+ */
 class Maps{
+    /**
+     * Creates a Maps Object 
+     * 
+     * Draw a basemap and add desired information to it.
+     * 
+     * @param combinedData - All the earthquake data available
+     * @param row - Row of the website to draw the map 
+     * @param column - Column of the website to draw the map
+     */
     constructor(combinedData, row, column){
         this.width = this.height = 500;
 
@@ -32,6 +43,9 @@ class Maps{
         console.log(this.panel);
     }
 
+    /**
+     * Draw a map in the shape of Utah 
+     */
     drawUtahBaseMap(){
         let svg = d3.select(this.panel + ' > div.visArea')
         .append('svg')
@@ -49,6 +63,10 @@ class Maps{
         return svg
     }
 
+    /**
+     * Add Utah lakes to a map
+     * @param svg - svg element to add lakes to 
+     */
     addLakes(svg){
         // Group for water features - used to debug/make sure it was landing roughly in Magna
         svg.append('g')
@@ -60,6 +78,10 @@ class Maps{
             .style('fill', 'lightblue');
     }
 
+    /**
+     * Add University of Utah seismometers in Utah to a map as triangles
+     * @param svg - svg element to add seismometers to 
+     */
     addSeismometers(svg){
         // triangle symbol for the seismometers 
         var triangle = d3.symbol().type(d3.symbolTriangle).size(this.stationSymbolSize)
@@ -95,6 +117,10 @@ class Maps{
             });
     }
 
+    /**
+     * Add Wasatch and West Valley faults to a map
+     * @param svg - svg element to add faults to
+     */
     addFaults(svg){
         // Filter the fault data to only use the Wasatch and West Valley faults becuase there are a lot otherwise 
         let faultsFiltered = this.faultData.features.filter(function(d) {
@@ -118,6 +144,10 @@ class Maps{
             });
     }
 
+    /**
+     * Add all the Magna earthquakes to a map as circles
+     * @param svg - svg element to add earthquakes to
+     */
     addEarthquakes(svg){
         // Selects the events the day of
         let quakeDataFiltered = this.quakeData.features.filter(d => (d.properties.time > 1584489600000 && d.properties.time < 1584576000000) && d.properties.mag > 2.0);
@@ -161,6 +191,11 @@ class Maps{
             });
     }
 
+
+    /**
+     * Add Magna mainshock to a map as a star
+     * @param svg - svg element to add mainshock to
+     */
     addMainShock(svg){
         let mainQuake = this.quakeData.features[d3.maxIndex(this.quakeData.features, d => d.properties.mag)];
         var star = d3.symbol().type(d3.symbolStar).size(150)
@@ -188,6 +223,9 @@ class Maps{
             });
     }
 
+    /**
+     * Draw a Google Map that shows all the aftershocks 
+     */
     drawGoogleMap(){
         console.log(this.panel + ' > div.visArea')
         d3.select(this.panel + ' > div.visArea')

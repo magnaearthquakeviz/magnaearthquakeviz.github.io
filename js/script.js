@@ -21,7 +21,7 @@ Promise.all([outline, quakes, outline2, faults, stations]).then(combinedData => 
     map21.addSeismometers(svg21)
     map21.addMainShock(svg21)
 
-    // add map for the second panel on the intensity of the mainshock
+    // add map for the third panel that shows all the aftershocks
     let map32 = new Maps(combinedData, 3, 2)
     map32.drawGoogleMap();
 

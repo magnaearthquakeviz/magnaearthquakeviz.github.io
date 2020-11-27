@@ -23,7 +23,9 @@ class Maps{
         this.lakeData = combinedData[2];
         this.faultData = combinedData[3];
         this.stationData = combinedData[4];
-
+        this.intensityData = combinedData[5];
+        
+        //console.log('data',this.intensityData)
         let magnitudeArray = d3.map(this.quakeData.features, d => d.properties.mag);
 
         this.magnitudeScale = d3.scaleSqrt()
@@ -140,6 +142,56 @@ class Maps{
             })
             .on('mouseleave', function () {
                 let selected = d3.select(this);
+                selected.selectAll('title').remove();
+            });
+    }
+
+    addZipCodeIntensity(svg){
+        
+        // Scale circle to the number of responses
+        let nresp = this.intensityData.features.map(d => (d.properties.nresp))
+        let nrespScale = d3.scaleSqrt()
+            .domain(d3.extent(nresp))
+            .range([2, 6]);
+
+        console.log('data', this.intensityData);
+
+        // Filter data to be in Utah Boundaries
+        let filtered = this.intensityData.features.filter(d => {
+            let lat = +d.geometry.coordinates[1]
+            let lon = +d.geometry.coordinates[0]
+
+            if (lat > 41 & lat < 42 & lon < -111 & lon > -114)
+                return d
+            if (lat > 37 & lat < 41 & lon < -109 & lon > -114)
+                return d
+        });
+
+        svg.append('g')
+            .attr('id', 'intensityG')
+            .selectAll('circle')
+            .data(filtered)
+            .join('circle')
+            .attr('cx', d => this.projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[0])
+            .attr('cy', d => this.projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[1])
+            .attr('r', d => nrespScale(d.properties.nresp))
+            .attr('stroke', 'black')
+            .attr('stroke-width', '1px')
+            .attr('fill', 'red')
+            .on('mouseenter', function() {
+                let selected = d3.select(this);
+                let zipcode = selected.datum().properties.name.split('<br>')[0]
+                selected.attr('stroke-width', '3px');
+                selected.append('title')
+                    .text(`Zipcode: ${zipcode}\nIntensity: ${selected.datum().properties.cdi}\n# Responses: ${selected.datum().properties.nresp}`);
+            })
+            .on('mouseleave', function () {
+                d3.select('#quakeG')
+                    .selectAll('circle')
+                    .attr('opacity', '1');
+
+                let selected = d3.select(this);
+                selected.attr('stroke-width', '1px');
                 selected.selectAll('title').remove();
             });
     }

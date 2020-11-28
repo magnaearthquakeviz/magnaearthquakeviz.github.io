@@ -12,28 +12,41 @@ class Maps{
      * @param column - Column of the website to draw the map
      */
     constructor(combinedData, row, column){
+        // map size
         this.width = this.height = 500;
+        // seismometer size
+        this.stationSymbolSize = 40;
+        // Google Map Setttings
+        this.mainshockLoc = {lat: 40.751, lng: -112.078};
+        this.googleZoom = 10.5;
 
-        this.stationSymbolSize = 30;
-        // this.mainshockLoc = {lat: 40.751, lng: -112.078};
-        // this.googleZoom = 10.5;
-
+        // Separate the data
         this.outlineData = combinedData[0];
         this.quakeData = combinedData[1];
         this.lakeData = combinedData[2];
         this.faultData = combinedData[3];
         this.stationData = combinedData[4];
-        this.intensityData = combinedData[5];
+        this.feltReportData = combinedData[5];
         
-        //console.log('data',this.intensityData)
-        let magnitudeArray = d3.map(this.quakeData.features, d => d.properties.mag);
+        // Filter data to be in Utah Boundaries
+        this.filteredFeltReports = this.feltReportData.features.filter(d => {
+            let lat = +d.geometry.coordinates[1]
+            let lon = +d.geometry.coordinates[0]
+            if (lat > 41 & lat < 42 & lon < -111 & lon > -114)
+                return d
+            if (lat > 37 & lat < 41 & lon < -109 & lon > -114)
+                return d
+        });
 
+        // Earthquake magnitude scale
+        let magnitudeArray = d3.map(this.quakeData.features, d => d.properties.mag);
         this.magnitudeScale = d3.scaleSqrt()
             .domain(d3.extent(magnitudeArray))
             .range([0.01, 5]);
     
+        // Color scale for intensity 
         this.intensityColorScale = d3.scaleLinear()
-            .domain([1, 7])
+            .domain([1, 7.5])
             .range(['yellow', 'red'])
     
         this.projection = d3.geoConicConformal()
@@ -43,37 +56,31 @@ class Maps{
     
         this.path = d3.geoPath().projection(this.projection);
         
-        this.panel = '#panel' + row + '-' + column;
-        console.log(this.panel);
+        this.panel = '#panel' + row + '-' + column + ' > div.visArea';
+        this.svg = d3.select(this.panel).append('svg')
+            .attr('width', this.width)
+            .attr('height', this.height);
     }
 
     /**
      * Draw a map in the shape of Utah 
      */
     drawUtahBaseMap(){
-        let svg = d3.select(this.panel + ' > div.visArea')
-        .append('svg')
-        .attr('width', this.width)
-        .attr('height', this.height);
-
         // Group for outline
-        svg.append('g')
+        this.svg.append('g')
             .attr('id', 'outlineG')
             .selectAll('path')
             .data(this.outlineData.features)
             .join('path')
             .attr('d', this.path);
-
-        return svg
     }
 
     /**
      * Add Utah lakes to a map
-     * @param svg - svg element to add lakes to 
      */
     addLakes(svg){
         // Group for water features - used to debug/make sure it was landing roughly in Magna
-        svg.append('g')
+        this.svg.append('g')
             .attr('id', 'lakeG')
             .selectAll('path')
             .data(this.lakeData.features)
@@ -83,55 +90,14 @@ class Maps{
     }
 
     /**
-     * Add University of Utah seismometers in Utah to a map as triangles
-     * @param svg - svg element to add seismometers to 
-     */
-    addSeismometers(svg){
-        // triangle symbol for the seismometers 
-        var triangle = d3.symbol().type(d3.symbolTriangle).size(this.stationSymbolSize)
-
-        // filter the station data to only use UU stations in Utah 
-        // will likely need to filter more because there are a lot 
-        let statDataFiltered = this.stationData.features.filter((d)=>{
-            let channels = d.properties.channels.map(d=>d.name)
-            return d.id.match(/UU/) && d.properties.name.match(/UT/) //&& channels[0].match(/HH/)
-        })
-        let that = this
-        // Group for the seismometers 
-        svg.append('g')
-            .attr('id', 'stationG')
-            .selectAll('path')
-            .data(statDataFiltered)
-            .join('path')
-            .attr('d', triangle)
-            .classed('station', true)
-            .attr('transform', function(d) {
-                var coords = that.projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])
-                return 'translate('+coords[0] + "," + coords[1] + ")"
-            })
-            .style('fill', d => this.intensityColorScale(d.properties.intensity))
-            .on('mouseenter', function(){
-                let selected = d3.select(this);
-                selected.attr('stroke-width', '3px');
-                selected.append('title')
-                .text(`${selected.datum().properties.name}\nDistance: ${selected.datum().properties.distance} km\nIntensity: ${selected.datum().properties.intensity}`);
-            })
-            .on('mouseleave', function () {
-                let selected = d3.select(this);
-                selected.selectAll('title').remove();
-            });
-    }
-
-    /**
      * Add Wasatch and West Valley faults to a map
-     * @param svg - svg element to add faults to
      */
     addFaults(svg){
         // Filter the fault data to only use the Wasatch and West Valley faults becuase there are a lot otherwise 
         let faultsFiltered = this.faultData.features.filter(function(d) {
             return d.properties.Label.match(/Wasatch/) || d.properties.Label.match(/West Valley/)});
 
-        svg.append('g')
+        this.svg.append('g')
             .attr('id', 'faultG')
             .selectAll('path')
             .data(faultsFiltered)
@@ -150,33 +116,105 @@ class Maps{
     }
 
     /**
+     * Create checkboxes for seismometer and felt report intensity data. 
+     * Default is seismometers checked. 
+     */
+    addIntensityData(svg){
+        // add a group element for the intensity 
+        this.svg.append('g').attr('id', 'intensityG')
+
+        // create a form element 
+        let form = d3.select(this.panel).append('form')
+
+        // add the felt report checkbox
+        let that = this
+        form.append('div')
+            .append('label')
+            .text('Felt Reports')
+            .append('input')
+            .attr('type', 'checkbox')
+            .on('click', function(d){
+                let reports = d3.select('#intensityG').selectAll('rect')
+                if(this.checked){
+                    that.addFeltReports(svg)
+                } else {
+                    reports.remove()
+                }
+            })    
+
+        // default add seismometers to the map
+        that.addSeismometers(svg)
+        // add seismometer checkbox 
+        form.append('div')
+            .append('label')
+            .text('Seismometers')
+            .append('input')
+            .attr('type', 'checkbox')
+            .property('checked', true)
+            .text('Seismometers')
+            .on('click', function(d){
+                let stats = d3.select('#intensityG').selectAll('path')
+                if(this.checked){
+                    that.addSeismometers(svg)
+                } else {
+                    stats.remove()
+                }
+            })     
+    }
+
+    /**
+     * Add University of Utah seismometers in Utah to a map as triangles
+     */
+    addSeismometers(svg){
+        // triangle symbol for the seismometers 
+        var triangle = d3.symbol().type(d3.symbolTriangle).size(this.stationSymbolSize)
+
+        // filter the station data to only use UU stations in Utah 
+        // will likely need to filter more because there are a lot 
+        let statDataFiltered = this.stationData.features.filter((d)=>{
+            let channels = d.properties.channels.map(d=>d.name)
+            return d.id.match(/UU/) && d.properties.name.match(/UT/) //&& channels[0].match(/HH/)
+        })
+        let that = this
+        // Group for the seismometers 
+        this.svg.select('#intensityG')
+            .selectAll('path')
+            .data(statDataFiltered)
+            .join('path')
+            .attr('d', triangle)
+            .classed('station', true)
+            .attr('transform', function(d) {
+                var coords = that.projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])
+                return 'translate('+coords[0] + "," + coords[1] + ")"
+            })
+            .style('fill', d => this.intensityColorScale(d.properties.intensity))
+            .on('mouseenter', function(){
+                let selected = d3.select(this);
+                selected.append('title')
+                .text(`${selected.datum().properties.name}\nDistance: ${selected.datum().properties.distance} km\nIntensity: ${selected.datum().properties.intensity}`);
+            })
+            .on('mouseleave', function () {
+                let selected = d3.select(this);
+                selected.selectAll('title').remove();
+            });
+    }
+
+    /**
      * Add felt reports by zipcode. Reported as a square that is sized by the number of reports. 
-     * @param svg - svg element to add felt reports to
      */
     addFeltReports(svg){
         // Scale to the number of responses
-        let nresp = this.intensityData.features.map(d => (d.properties.nresp))
+        let nresp = this.feltReportData.features.map(d => (d.properties.nresp))
         let nrespScale = d3.scaleSqrt()
             .domain(d3.extent(nresp))
-            .range([4, 10]);
-
-
-        // Filter data to be in Utah Boundaries
-        let filtered = this.intensityData.features.filter(d => {
-            let lat = +d.geometry.coordinates[1]
-            let lon = +d.geometry.coordinates[0]
-            if (lat > 41 & lat < 42 & lon < -111 & lon > -114)
-                return d
-            if (lat > 37 & lat < 41 & lon < -109 & lon > -114)
-                return d
-        });
+            .range([5, 12]);
 
         // TODO: Check that squares are sized appropriatley 
-        svg.append('g')
-            .attr('id', 'intensityG')
+        this.svg.select('#intensityG')
             .selectAll('rect')
-            .data(filtered)
+            .data(this.filteredFeltReports)
             .join('rect')
+            .classed('feltReport', true)
             .attr('x', d=>this.projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[0])
             .attr('y', d=> this.projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[1])
             .attr('height', d => nrespScale(d.properties.nresp))
@@ -187,22 +225,18 @@ class Maps{
             .on('mouseenter', function() {
                 let selected = d3.select(this);
                 let zipcode = selected.datum().properties.name.split('<br>')[0]
-                selected.attr('stroke-width', '3px');
+                selected.attr('stroke-width', '2px');
                 selected.append('title')
                     .text(`Zipcode: ${zipcode}\nIntensity: ${selected.datum().properties.cdi}\n# Responses: ${selected.datum().properties.nresp}`);
             })
             .on('mouseleave', function () {
-                d3.select('#quakeG')
-                    .selectAll('circle')
-                    .attr('opacity', '1');
-
                 let selected = d3.select(this);
                 selected.attr('stroke-width', '1px');
                 selected.selectAll('title').remove();
             });
         
         // Use this instead of above code to use circles instead of squares
-        // svg.append('g')
+        // this.svg.append('g')
         //     .attr('id', 'intensityG')
         //     .selectAll('circle')
         //     .data(filtered)
@@ -217,7 +251,6 @@ class Maps{
 
     /**
      * Add all the Magna earthquakes to a map as circles
-     * @param svg - svg element to add earthquakes to
      */
     addEarthquakes(svg){
         // Selects the events the day of
@@ -226,7 +259,7 @@ class Maps{
         console.log(quakeDataFiltered);
 
         // Group for earthquakes
-        svg.append('g')
+        this.svg.append('g')
             .attr('id', 'quakeG')
             .selectAll('circle')
             .data(quakeDataFiltered)
@@ -265,15 +298,19 @@ class Maps{
 
     /**
      * Add Magna mainshock to a map as a star
-     * @param svg - svg element to add mainshock to
      */
     addMainShock(svg){
         let mainQuake = this.quakeData.features[d3.maxIndex(this.quakeData.features, d => d.properties.mag)];
         var star = d3.symbol().type(d3.symbolStar).size(150)
+        
+        let g = this.svg.select('#mainShockG')
+        if (g.empty()){
+            g = this.svg.append('g').attr('id', 'mainShockG')
+
+        }
+
         let that = this
-        svg.append('g')
-            .attr('id', 'mainShockG')
-            .selectAll('path')
+        g.selectAll('path')
             .data([mainQuake])
             .join('path')
             .attr('d', star)
@@ -282,6 +319,7 @@ class Maps{
                 return 'translate('+coords[0] + "," + coords[1] + ")"
             })
             .style('fill', 'yellow')
+            .attr('position', 'absolute')
             .on('mouseenter', function() {
                 let selected = d3.select(this);
                 let date = new Date(selected.datum().properties.time);
@@ -298,16 +336,16 @@ class Maps{
      * Draw a Google Map that shows all the aftershocks 
      */
     drawGoogleMap(){
-        console.log(this.panel + ' > div.visArea')
-        d3.select(this.panel + ' > div.visArea')
+        console.log(this.panel)
+        d3.select(this.panel)
             .style('height', '500px')
             .append('div').attr('id','googleMap')
 
         let mapContainer = d3.select('#googleMap').node()
 
         let options = {
-            center:{lat: 40.751, lng: -112.078},
-            zoom: 10.5, 
+            center:{lat: this.mainshockLoc['lat'], lng: this.mainshockLoc['lng']},
+            zoom: this.googleZoom, 
             mapTypeId: 'terrain' }
         
          let map = new google.maps.Map(mapContainer, options)

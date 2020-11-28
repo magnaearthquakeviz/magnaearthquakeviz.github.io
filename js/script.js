@@ -5,8 +5,9 @@ let lakes = d3.json('Resources/Utah_Lakes_NHD.geojson');
 let faults = d3.json('Data/utah-qfaults_2017.geojson');
 let stations = d3.json('Data/station_info.json');
 let feltReports = d3.json('Data/felt_reports_zipcodes.geojson')
+let xsec = d3.csv('Data/xsec_projection_updated.csv')
 
-Promise.all([outline, quakes, lakes, faults, stations, feltReports]).then(combinedData => {
+Promise.all([outline, quakes, lakes, faults, stations, feltReports, xsec]).then(combinedData => {
     console.log(combinedData);
 
     // add map for the first panel on the overview of the mainshock
@@ -34,4 +35,7 @@ Promise.all([outline, quakes, lakes, faults, stations, feltReports]).then(combin
     //scatter41.addDropdowns(axisOptions);
     //scatter41.addSliders(['time', 'mag']);
     scatter41.addDropdownAndSlider(axisOptions);
+
+    let scatter52 = new Scatter(combinedData[6], 5, 2, xsec = true);
+    scatter52.drawPlot('x', 'depth', 'mag');
 });

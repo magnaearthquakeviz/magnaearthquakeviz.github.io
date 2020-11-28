@@ -8,12 +8,13 @@ class PlotData {
      * @param depth - Depth of the earthquake hypocenter
      * @param mag - Magnitude of the earthquake 
      */
-    constructor(time, lat, lon, depth, mag) {
+    constructor(time, lat, lon, depth, mag, x) {
         this.time = time
-        this.lat = lat
-        this.lon = lon
-        this.depth = depth
-        this.mag = mag
+        this.lat = +lat
+        this.lon = +lon
+        this.depth = +depth
+        this.mag = +mag
+        this.x = +x
     }
 }
 
@@ -26,14 +27,21 @@ class Scatter {
      * @param row - The row on the website to draw the plot
      * @param column- The column on the website to draw the plot 
      */
-    constructor(quakeData, row, column) {
+    constructor(quakeData, row, column, xsec = false) {
         this.width = 750;
         this.height = 500;
         this.panel = `#panel${row}-${column}`; //'#panel' + row + '-' + column;
         this.panelID = `panel${row}-${column}`;
 
+        this.xsec = xsec
         this.quakeData = quakeData;
-        this.plotData = this.setPlotData(quakeData);
+
+        if (this.xsec){
+            this.plotData = this.setXSecData(quakeData);
+            console.log(this.plotData)
+        } else {
+            this.plotData = this.setPlotData(quakeData);
+        }
 
         this.margin = 40;
 
@@ -88,9 +96,21 @@ class Scatter {
             let coords = d.geometry.coordinates;
             let mag = d.properties.mag;
             let time = new Date(d.properties.time);
-            return new PlotData(time, coords[0], coords[1], coords[2], mag);
+            return new PlotData(time, coords[0], coords[1], coords[2], mag, 0);
         });
 
+        return data;
+    }
+
+    /**
+     * Store the individal earthquake data as PlotData objects for easier access
+     * @param data - Data passed in. Should follow the data format specified by quakeData.
+     */
+    setXSecData(data) {
+        data = data.map(d => {
+            let time = new Date(d.time);
+            return new PlotData(time, d.latitude, d.longitude, d.depth, d.mag, d.x);
+        });
         return data;
     }
 
@@ -434,6 +454,7 @@ class Scatter {
         let yData = this.plotData.map(d => d[this.yIndicator]);
         let cData = this.plotData.map(d => d[this.cIndicator]);
 
+        console.log(xData)
         // Set up default range values
         let xMin = d3.min(xData);
         let xMax = d3.max(xData);
@@ -441,7 +462,7 @@ class Scatter {
         let yMax = d3.max(yData);
         let cMin = d3.min(cData);
         let cMax = d3.max(cData);
-
+        console.log(xMin, xMax)
         let xScale, yScale, cScale;
 
         // Adjust ranges to slider values if applicable
@@ -472,18 +493,32 @@ class Scatter {
         if (this.yIndicator === 'time') {
             yScale = d3.scaleTime().domain([yMin, yMax]).range([this.vizHeight, 0]); //.nice();
         } else {
-            yScale = d3.scaleLinear().domain([yMin, yMax]).range([this.vizHeight, 0]); // .nice();
+            if (this.xsec){
+                yScale = d3.scaleLinear().domain([yMin, yMax]).range([0, this.vizHeight]);
+            } else{
+                yScale = d3.scaleLinear().domain([yMin, yMax]).range([this.vizHeight, 0]); 
+            }
         }
+
         cScale = d3.scaleSqrt().domain([cMin, cMax]).range([1, 4]);
 
         // Label axis
         this.xAxisLabel.text(this.xIndicator);
         this.yAxisLabel.text(this.yIndicator);
 
-        // Set up axis ticks
         let timeFormat = d3.timeFormat('%-m/%-d');
+
+        // Set up axis ticks
         let xAxisCall = d3.axisBottom(xScale);
         let yAxisCall = d3.axisLeft(yScale);
+
+        if (this.xsec){
+            this.svgGroup.select('.x-axis')
+                .attr('transform', `translate(0, 0)`);
+            xAxisCall = d3.axisTop(xScale);
+            yAxisCall = d3.axisLeft(yScale);
+        } 
+
         if (this.xIndicator === 'time') {
             xAxisCall.tickFormat(timeFormat);
         }
@@ -522,5 +557,9 @@ class Scatter {
 
         //  TODO: Implement opacity scaling better or remove entirely.
         //  .attr('opacity', d => opacityScale(d[this.cIndicator]));
+    }
+
+    drawXSection(){
+
     }
 }

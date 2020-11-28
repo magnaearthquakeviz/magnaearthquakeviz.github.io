@@ -22,8 +22,6 @@ Promise.all([outline, quakes, lakes, faults, stations, feltReports]).then(combin
     map21.addIntensityData()
     map21.addMainShock()
 
-    
-
     // add map for the third panel that shows all the aftershocks
     let map32 = new Maps(combinedData, 3, 2)
     map32.drawGoogleMap();

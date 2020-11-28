@@ -32,7 +32,9 @@ class Maps{
             .domain(d3.extent(magnitudeArray))
             .range([0.01, 5]);
     
-        this.colorScale = d3.scaleOrdinal();
+        this.intensityColorScale = d3.scaleLinear()
+            .domain([1, 7])
+            .range(['yellow', 'red'])
     
         this.projection = d3.geoConicConformal()
             .parallels([40 + 43 / 60, 41 + 47 / 60])
@@ -107,6 +109,7 @@ class Maps{
                 var coords = that.projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])
                 return 'translate('+coords[0] + "," + coords[1] + ")"
             })
+            .style('fill', d => this.intensityColorScale(d.properties.intensity))
             .on('mouseenter', function(){
                 let selected = d3.select(this);
                 selected.attr('stroke-width', '3px');
@@ -146,38 +149,41 @@ class Maps{
             });
     }
 
-    addZipCodeIntensity(svg){
-        
-        // Scale circle to the number of responses
+    /**
+     * Add felt reports by zipcode. Reported as a square that is sized by the number of reports. 
+     * @param svg - svg element to add felt reports to
+     */
+    addFeltReports(svg){
+        // Scale to the number of responses
         let nresp = this.intensityData.features.map(d => (d.properties.nresp))
         let nrespScale = d3.scaleSqrt()
             .domain(d3.extent(nresp))
-            .range([2, 6]);
+            .range([4, 10]);
 
-        console.log('data', this.intensityData);
 
         // Filter data to be in Utah Boundaries
         let filtered = this.intensityData.features.filter(d => {
             let lat = +d.geometry.coordinates[1]
             let lon = +d.geometry.coordinates[0]
-
             if (lat > 41 & lat < 42 & lon < -111 & lon > -114)
                 return d
             if (lat > 37 & lat < 41 & lon < -109 & lon > -114)
                 return d
         });
 
+        // TODO: Check that squares are sized appropriatley 
         svg.append('g')
             .attr('id', 'intensityG')
-            .selectAll('circle')
+            .selectAll('rect')
             .data(filtered)
-            .join('circle')
-            .attr('cx', d => this.projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[0])
-            .attr('cy', d => this.projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[1])
-            .attr('r', d => nrespScale(d.properties.nresp))
+            .join('rect')
+            .attr('x', d=>this.projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[0])
+            .attr('y', d=> this.projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[1])
+            .attr('height', d => nrespScale(d.properties.nresp))
+            .attr('width', d => nrespScale(d.properties.nresp))
             .attr('stroke', 'black')
             .attr('stroke-width', '1px')
-            .attr('fill', 'red')
+            .attr('fill', d => this.intensityColorScale(d.properties.cdi))
             .on('mouseenter', function() {
                 let selected = d3.select(this);
                 let zipcode = selected.datum().properties.name.split('<br>')[0]
@@ -194,6 +200,19 @@ class Maps{
                 selected.attr('stroke-width', '1px');
                 selected.selectAll('title').remove();
             });
+        
+        // Use this instead of above code to use circles instead of squares
+        // svg.append('g')
+        //     .attr('id', 'intensityG')
+        //     .selectAll('circle')
+        //     .data(filtered)
+        //     .join('circle')
+        //     .attr('cx', d => this.projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[0])
+        //     .attr('cy', d => this.projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[1])
+        //     .attr('r', d => nrespScale(d.properties.nresp))
+        //     .attr('stroke', 'black')
+        //     .attr('stroke-width', '1px')
+        //     .attr('fill', 'red')
     }
 
     /**

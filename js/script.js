@@ -20,7 +20,7 @@ Promise.all([outline, quakes, lakes, faults, stations, intensity]).then(combined
     let map21 = new Maps(combinedData, 2, 1)
     let svg21 = map21.drawUtahBaseMap()
     map21.addSeismometers(svg21)
-    map21.addZipCodeIntensity(svg21)
+    map21.addFeltReports(svg21)
     map21.addMainShock(svg21)
     
 

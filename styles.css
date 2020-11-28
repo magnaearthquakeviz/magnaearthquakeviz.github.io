@@ -56,11 +56,12 @@ path
 }
 
 .station{
+    stroke-width: 1px;
     fill: gray;
 }
 
 .station:hover{
-    fill: blue;
+    stroke-width: 2px;
 }
 
 #googleMap {

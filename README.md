@@ -14,8 +14,8 @@ We hope to create an effective and informative visualisation centered around the
 
 ## Data
 - [Individual Earthquake Data](https://earthquake.usgs.gov/earthquakes/search/): Downloaded earthquakes near Magna, UT from 18 March 2020 - 04 November 2020
-- [Felt Reports by ZIP](https://earthquake.usgs.gov/earthquakes/eventpage/uu60363602/dyfi/intensity)
-- [Station Lists](https://earthquake.usgs.gov/earthquakes/eventpage/uu60363602/shakemap/intensity) 
+- [Felt Reports by ZIP](https://earthquake.usgs.gov/earthquakes/eventpage/uu60363602/dyfi/intensity): Estimated intensity for a zipcode based on USGS Felt Reports
+- [Station Lists](https://earthquake.usgs.gov/earthquakes/eventpage/uu60363602/shakemap/intensity): Seismometers recording the mainshock event
 - [Utah Quaternary Faults](https://geology.utah.gov/apps/qfaults/): Downloaded as a kmz file and converted to geoJson using [mygeodata.cloud](https://mygeodata.cloud/converter/kmz-to-json)
 - Cross-Section Data: Used [The Generic Mapping Tools](https://www.soest.hawaii.edu/gmt/) pscoupe function to project the earthquakes onto the selected cross-section line
 - Waveform Data from IRIS

@@ -57,9 +57,7 @@ class Maps{
         this.path = d3.geoPath().projection(this.projection);
         
         this.panel = '#panel' + row + '-' + column + ' > div.visArea';
-        this.svg = d3.select(this.panel).append('svg')
-            .attr('width', this.width)
-            .attr('height', this.height);
+        this.svg
     }
 
     /**
@@ -67,7 +65,10 @@ class Maps{
      */
     drawUtahBaseMap(){
         // Group for outline
-        this.svg.append('g')
+        this.svg = d3.select(this.panel).append('svg');
+        this.svg.attr('width', this.width)
+            .attr('height', this.height)
+            .append('g')
             .attr('id', 'outlineG')
             .selectAll('path')
             .data(this.outlineData.features)
@@ -140,10 +141,10 @@ class Maps{
                 } else {
                     reports.remove()
                 }
-            })    
+            });    
 
         // default add seismometers to the map
-        that.addSeismometers(svg)
+        that.addSeismometers(svg);
         // add seismometer checkbox 
         form.append('div')
             .append('label')
@@ -159,7 +160,7 @@ class Maps{
                 } else {
                     stats.remove()
                 }
-            })     
+            });
     }
 
     /**

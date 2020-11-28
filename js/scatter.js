@@ -26,6 +26,8 @@ class Scatter {
      * @param quakeData - geoJson file of earthquake information
      * @param row - The row on the website to draw the plot
      * @param column- The column on the website to draw the plot 
+     * @param xsec - Specifies if drawing a cross-section plot, which has the x-axis on the 
+     *              top and the data includes position along the cross-section line
      */
     constructor(quakeData, row, column, xsec = false) {
         this.width = 750;
@@ -36,11 +38,11 @@ class Scatter {
         this.xsec = xsec
         this.quakeData = quakeData;
 
+        // Set the plot data depending on the input data format
         if (this.xsec){
             this.plotData = this.setXSecData(quakeData);
-            console.log(this.plotData)
         } else {
-            this.plotData = this.setPlotData(quakeData);
+            this.plotData = this.setScatterPlotData(quakeData);
         }
 
         this.margin = 40;
@@ -57,16 +59,23 @@ class Scatter {
 
         this.xAxis = this.svgGroup.append('g')
             .classed('x-axis', true)
-            .attr('transform', `translate(0, ${this.vizHeight})`);
         this.xAxisLabel = this.svgGroup.append('text').classed('x-label', true)
             .style('text-anchor', 'middle')
-            .attr('transform', 'translate(' + (this.vizWidth / 2) + ',' + (this.vizHeight + this.margin - 10) + ')');
 
         this.yAxis = this.svgGroup.append('g')
             .classed('y-axis', true);
         this.yAxisLabel = this.svgGroup.append('text').classed('y-label', true)
             .style('text-anchor', 'middle')
             .attr('transform', `translate(-30, ${this.vizHeight / 2}), rotate(270)`);
+
+        if(this.xsec){
+            this.xAxis.attr('transform', `translate(0, ${this.margin})`);
+            this.xAxisLabel.attr('transform', 'translate(' + (this.vizWidth / 2) + ',' + 0 + ')');
+            this.yAxis.attr('transform', `translate(0, ${this.margin})`)
+        } else{
+            this.xAxis.attr('transform', `translate(0, ${this.vizHeight})`);
+            this.xAxisLabel.attr('transform', 'translate(' + (this.vizWidth / 2) + ',' + (this.vizHeight + this.margin - 10) + ')');
+        }
 
         this.transition = d3.transition()
             .duration(750)
@@ -89,9 +98,10 @@ class Scatter {
 
     /**
      * Store the individal earthquake data as PlotData objects for easier access
-     * @param data - Data passed in. Should follow the data format specified by quakeData.
+     * @param data - Data passed in. Should follow the data format specified by quakeData
+     * for general scatter plots.
      */
-    setPlotData(data) {
+    setScatterPlotData(data) {
         data = data.features.map(d => {
             let coords = d.geometry.coordinates;
             let mag = d.properties.mag;
@@ -103,8 +113,9 @@ class Scatter {
     }
 
     /**
-     * Store the individal earthquake data as PlotData objects for easier access
-     * @param data - Data passed in. Should follow the data format specified by quakeData.
+     * Store the individal earthquake data as PlotData objects for easier access.
+     * @param data - Data passed in. Should follow the data format specified by quakeData 
+     * for cross-sections.
      */
     setXSecData(data) {
         data = data.map(d => {
@@ -454,7 +465,6 @@ class Scatter {
         let yData = this.plotData.map(d => d[this.yIndicator]);
         let cData = this.plotData.map(d => d[this.cIndicator]);
 
-        console.log(xData)
         // Set up default range values
         let xMin = d3.min(xData);
         let xMax = d3.max(xData);
@@ -462,7 +472,7 @@ class Scatter {
         let yMax = d3.max(yData);
         let cMin = d3.min(cData);
         let cMax = d3.max(cData);
-        console.log(xMin, xMax)
+
         let xScale, yScale, cScale;
 
         // Adjust ranges to slider values if applicable
@@ -493,8 +503,9 @@ class Scatter {
         if (this.yIndicator === 'time') {
             yScale = d3.scaleTime().domain([yMin, yMax]).range([this.vizHeight, 0]); //.nice();
         } else {
+            // flip the y-axis if drawing a cross-section
             if (this.xsec){
-                yScale = d3.scaleLinear().domain([yMin, yMax]).range([0, this.vizHeight]);
+                yScale = d3.scaleLinear().domain([yMin, yMax]).range([0, this.vizHeight-this.margin]);
             } else{
                 yScale = d3.scaleLinear().domain([yMin, yMax]).range([this.vizHeight, 0]); 
             }
@@ -509,15 +520,15 @@ class Scatter {
         let timeFormat = d3.timeFormat('%-m/%-d');
 
         // Set up axis ticks
-        let xAxisCall = d3.axisBottom(xScale);
-        let yAxisCall = d3.axisLeft(yScale);
-
+        let xAxisCall, yAxisCall;
+        // draw the x-axis on top if drawing a cross-section
         if (this.xsec){
-            this.svgGroup.select('.x-axis')
-                .attr('transform', `translate(0, 0)`);
             xAxisCall = d3.axisTop(xScale);
             yAxisCall = d3.axisLeft(yScale);
-        } 
+        } else{
+            xAxisCall = d3.axisBottom(xScale);
+            yAxisCall = d3.axisLeft(yScale);
+        }
 
         if (this.xIndicator === 'time') {
             xAxisCall.tickFormat(timeFormat);
@@ -533,11 +544,12 @@ class Scatter {
         // Transform to margin
         this.svgGroup.attr("transform", `translate(${this.margin}, ${this.margin})`);
 
+
         // TODO: Implement opacity scaling better or remove entirely.
         let opacityScale = d3.scaleLinear().domain([cMin, cMax]).range([0.3, 1]);
 
         // Draw points; filter to slider values if applicable
-        this.svgGroup.selectAll('circle')
+        let circles = this.svgGroup.selectAll('circle')
             .data(this.plotData.filter(d => {
                 let xVal = d[this.xIndicator];
                 let yVal = d[this.yIndicator];
@@ -555,6 +567,10 @@ class Scatter {
             .attr('cy', d => yScale(d[this.yIndicator]))
             .attr('r', d => cScale(d[this.cIndicator]));
 
+        // Shift circles to work with the x-axis on top
+        if(this.xsec){
+            circles.attr("transform", `translate(0, ${this.margin})`)
+        }
         //  TODO: Implement opacity scaling better or remove entirely.
         //  .attr('opacity', d => opacityScale(d[this.cIndicator]));
     }

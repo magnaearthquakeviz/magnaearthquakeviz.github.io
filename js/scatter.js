@@ -574,8 +574,4 @@ class Scatter {
         //  TODO: Implement opacity scaling better or remove entirely.
         //  .attr('opacity', d => opacityScale(d[this.cIndicator]));
     }
-
-    drawXSection(){
-
-    }
 }

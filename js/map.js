@@ -28,7 +28,7 @@ class Maps{
         this.stationData = combinedData[4];
         this.feltReportData = combinedData[5];
         
-        // Filter data to be in Utah Boundaries
+        // Filter felt report data to be in Utah Boundaries
         this.filteredFeltReports = this.feltReportData.features.filter(d => {
             let lat = +d.geometry.coordinates[1]
             let lon = +d.geometry.coordinates[0]
@@ -349,7 +349,7 @@ class Maps{
             zoom: this.googleZoom, 
             mapTypeId: 'terrain' }
         
-         let map = new google.maps.Map(mapContainer, options)
+        let map = new google.maps.Map(mapContainer, options)
 
         let overlay = new google.maps.OverlayView();
 
@@ -360,11 +360,12 @@ class Maps{
             //to see all the available panes;
             console.log(this.getPanes());
 
-            let layer = d3.select(this.getPanes().overlayMouseTarget).append("div")
+            let quakeLayer = d3.select(this.getPanes().overlayMouseTarget).append("div")
                 .attr("class", "map-quakes");
 
             overlay.onRemove = function () {
                 d3.select('.map-quakes').remove();
+                d3.select('.map-xsec').remove();
             };
 
             overlay.draw = function () {
@@ -372,10 +373,8 @@ class Maps{
                 let projection = this.getProjection(),
                     padding = 10;
 
-
                 // Draw each marker as a separate SVG element.
-                // We could use a single SVG, but what size would it have?
-                let marker = layer.selectAll('svg')
+                let marker = quakeLayer.selectAll('svg')
                     .data(that.quakeData.features);
 
                 let markerEnter = marker.enter().append("svg");
@@ -387,8 +386,7 @@ class Maps{
 
                 marker = marker.merge(markerEnter);
 
-                marker
-                    .each(transform)
+                marker.each(transform)
                     .attr("class", "marker");
 
                 marker.selectAll('circle')

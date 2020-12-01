@@ -6,8 +6,9 @@ let faults = d3.json('Data/utah-qfaults_2017.geojson');
 let stations = d3.json('Data/station_info.json');
 let feltReports = d3.json('Data/felt_reports_zipcodes.geojson')
 let xsec = d3.csv('Data/xsec_projection_updated.csv')
+let googleMapStyles = d3.json("Resources/google-map-style.json")
 
-Promise.all([outline, quakes, lakes, faults, stations, feltReports, xsec]).then(combinedData => {
+Promise.all([outline, quakes, lakes, faults, stations, feltReports, xsec, googleMapStyles]).then(combinedData => {
     console.log(combinedData);
 
     // add map for the first panel on the overview of the mainshock
@@ -25,7 +26,7 @@ Promise.all([outline, quakes, lakes, faults, stations, feltReports, xsec]).then(
 
     // add map for the third panel that shows all the aftershocks
     let map32 = new Maps(combinedData, 3, 2)
-    map32.drawGoogleMap();
+    map32.drawGoogleMap(combinedData[7]);
 
     let axisOptions = ['time', 'mag', 'depth', 'lat', 'lon'];
 

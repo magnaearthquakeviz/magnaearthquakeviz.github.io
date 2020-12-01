@@ -336,24 +336,25 @@ class Maps{
     /**
      * Draw a Google Map that shows all the aftershocks 
      */
-    drawGoogleMap(){
-        console.log(this.panel)
+    drawGoogleMap(style){
+        // Followed example from class map tutorial page
         d3.select(this.panel)
             .style('height', '500px')
-            .append('div').attr('id','googleMap')
+            .append('div').attr('id','googleMap');
 
-        let mapContainer = d3.select('#googleMap').node()
-
+        let mapContainer = d3.select('#googleMap').node();
         let options = {
             center:{lat: this.mainshockLoc['lat'], lng: this.mainshockLoc['lng']},
             zoom: this.googleZoom, 
-            mapTypeId: 'terrain' }
+            mapTypeId: 'terrain',
+            styles: style
+        };
         
-        let map = new google.maps.Map(mapContainer, options)
+        let map = new google.maps.Map(mapContainer, options);
 
         let overlay = new google.maps.OverlayView();
 
-        let that = this
+        let that = this;
         // Add the container when the overlay is added to the map.
         overlay.onAdd = function () {
 
@@ -417,7 +418,7 @@ class Maps{
                         selected.attr('stroke-width', '1px');
                         selected.selectAll('title').remove();
                     })
-        
+                
                 //transforms the markers to the right
                 // lat / lng using the projection from google maps
                     function transform(d) {
@@ -431,5 +432,73 @@ class Maps{
         }
         // Bind our overlay to the map…
         overlay.setMap(map);
+
+        // Followed example from 
+        // https://developers.google.com/maps/documentation/javascript/examples/polyline-simple#maps_polyline_simple-javascript
+        const crossSection = new google.maps.Polyline({
+            path:[{lat: 40.725, lng: -112.221}, {lat:40.789, lng:-111.850}],
+            geodesic: true, 
+            strokeColor: 'black', 
+            strokeOpacity: 1.0, 
+            strokeWeight: 2,
+        });
+
+        const Amarker = new google.maps.Marker({
+            position: { lat: 40.725, lng: -112.221 },
+            map: map,
+            label: {
+                color: 'white',
+                fontWeight: 'bold',
+                text: 'A',
+                fontSize: '20px',
+            },
+        });
+
+        const Bmarker = new google.maps.Marker({
+            position: { lat: 40.789, lng: -111.850},
+            map: map,
+            label: {
+                color: 'white',
+                fontWeight: 'bold',
+                text: 'B',
+                fontSize: '20px',
+            },
+        });
+
+        // Add text box explaining markers
+        // Followed this example: https://developers.google.com/maps/documentation/javascript/infowindows
+        const contentAString = 
+        '<div id="content">' +
+        '<div id="siteNotice">' +
+        "</div>" +
+        '<div id="bodyContent">' +
+        "<p> Start of the cross-section line used in Panel 4.</p>" +
+        "</div>" +
+        "</div>";
+
+        const infowindowA = new google.maps.InfoWindow({
+            content: contentAString,
+        });
+        Amarker.addListener("click", () =>{
+            infowindowA.open(map, Amarker)
+        });
+
+        const contentBString = 
+        '<div id="content">' +
+        '<div id="siteNotice">' +
+        "</div>" +
+        '<div id="bodyContent">' +
+        "<p> End of the cross-section line used in Panel 4.</p>" +
+        "</div>" +
+        "</div>";
+
+        const infowindowB = new google.maps.InfoWindow({
+            content: contentBString,
+        });
+        Bmarker.addListener("click", () =>{
+            infowindowB.open(map, Bmarker)
+        });
+
+        crossSection.setMap(map);
     }
 }

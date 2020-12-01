@@ -257,8 +257,6 @@ class Maps{
         // Selects the events the day of
         let quakeDataFiltered = this.quakeData.features.filter(d => (d.properties.time > 1584489600000 && d.properties.time < 1584576000000) && d.properties.mag > 2.0);
 
-        console.log(quakeDataFiltered);
-
         // Group for earthquakes
         this.svg.append('g')
             .attr('id', 'quakeG')
@@ -366,7 +364,6 @@ class Maps{
 
             overlay.onRemove = function () {
                 d3.select('.map-quakes').remove();
-                d3.select('.map-xsec').remove();
             };
 
             overlay.draw = function () {
@@ -468,12 +465,8 @@ class Maps{
         // Add text box explaining markers
         // Followed this example: https://developers.google.com/maps/documentation/javascript/infowindows
         const contentAString = 
-        '<div id="content">' +
-        '<div id="siteNotice">' +
-        "</div>" +
-        '<div id="bodyContent">' +
+        '<div id="Amarker content">' +
         "<p> Start of the cross-section line used in Panel 4.</p>" +
-        "</div>" +
         "</div>";
 
         const infowindowA = new google.maps.InfoWindow({
@@ -484,12 +477,8 @@ class Maps{
         });
 
         const contentBString = 
-        '<div id="content">' +
-        '<div id="siteNotice">' +
-        "</div>" +
-        '<div id="bodyContent">' +
+        '<div id="Bmarker content">' +
         "<p> End of the cross-section line used in Panel 4.</p>" +
-        "</div>" +
         "</div>";
 
         const infowindowB = new google.maps.InfoWindow({

@@ -103,6 +103,11 @@ h2 {
     filter: grayscale(100%);
 }
 
+#panel4-1 circle.count-mode
+{
+    opacity: 0.7;
+}
+
 #panel4-1 circle
 {
     fill: cadetblue;

@@ -18,6 +18,14 @@ class PlotData {
     }
 }
 
+class CountPlotData {
+    constructor(xVal, yVal, cVal) {
+        this.xVal = xVal;
+        this.yVal = yVal;
+        this.cVal = cVal;
+    }
+}
+
 /**Class represents the scatter plot view. */
 class Scatter {
     /**
@@ -143,7 +151,7 @@ class Scatter {
     }
 
     /**
-     * Store the individal earthquake data as PlotData objects for easier access
+     * Store the individual earthquake data as PlotData objects for easier access
      * @param data - Data passed in. Should follow the data format specified by quakeData
      * for general scatter plots.
      */
@@ -158,8 +166,17 @@ class Scatter {
         return data;
     }
 
+    setCountData(xAxisData, yAxisData, cAxisData) {
+        let data = [];
+        for (let i = 0; i < xAxisData.length; i++) {
+            data.push(new CountPlotData(xAxisData[i], yAxisData[i], cAxisData[i]));
+        }
+
+        return data;
+    }
+
     /**
-     * Store the individal earthquake data as PlotData objects for easier access.
+     * Store the individual earthquake data as PlotData objects for easier access.
      * @param data - Data passed in. Should follow the data format specified by quakeData
      * for cross-sections.
      */
@@ -552,6 +569,33 @@ class Scatter {
         let cMin = d3.min(cData);
         let cMax = d3.max(cData);
 
+        // Bin the data if the y-axis parameter is 'count'
+        if (yIndicator === 'count') {
+            let binGenerator = d3.bin().thresholds(50);
+            let binnedData = binGenerator(xData);
+
+            let newXData = [];
+            let newYData = [];
+            let newCData = [];
+
+            for (let bin of binnedData) {
+                let midpoint = (bin.x1 + bin.x0) / 2;
+                newXData.push(new Date(midpoint));
+                newYData.push(bin.length);
+                newCData.push(5); //max-sized circles
+            }
+            //recalculate mins and maxes
+            yMin = d3.min(newYData);
+            yMax = d3.max(newYData);
+            cMin = 1;
+            cMax = 5;
+
+            //set new data
+            xData = newXData;
+            yData = newYData;
+            cData = newCData;
+        }
+
         let xScale, yScale, cScale;
 
         // Adjust ranges to slider values if applicable
@@ -629,23 +673,48 @@ class Scatter {
         let that = this;
 
         // Draw points; filter to slider values if applicable
-        let circles = this.svgGroup.selectAll('circle')
-            .data(this.plotData.filter(d => {
-                let xVal = d[this.xIndicator];
-                let yVal = d[this.yIndicator];
-                let cVal = d[this.cIndicator];
-                return ((xVal >= xMin)
-                    && (xVal <= xMax)
-                    && (yVal >= yMin)
-                    && (yVal <= yMax)
-                    && (cVal >= cMin)
-                    && (cVal <= cMax));
-            }))
-            .join('circle')
-            .transition(this.transition)
-            .attr('cx', d => xScale(d[this.xIndicator]))
-            .attr('cy', d => yScale(d[this.yIndicator]))
-            .attr('r', d => cScale(d[this.cIndicator]));
+        let circles;
+        if (yIndicator === 'count') {
+            // link the new data set
+            let countData = this.setCountData(xData, yData, cData);
+            circles = this.svgGroup.selectAll('circle')
+                .data(countData.filter(d => {
+                    return ((d.xVal >= xMin)
+                        && (d.xVal <= xMax)
+                        && (d.yVal >= yMin)
+                        && (d.yVal <= yMax)
+                        && (d.cVal >= cMin)
+                        && (d.cVal <= cMax))
+                }))
+                .join('circle')
+                .transition(this.transition)
+                .attr('cx', d => xScale(d.xVal))
+                .attr('cy', d => yScale(d.yVal))
+                .attr('r', d => cScale(d.cVal));
+
+        } else {
+            circles = this.svgGroup.selectAll('circle')
+                .data(this.plotData.filter(d => {
+                    let xVal = d[this.xIndicator];
+                    let yVal = d[this.yIndicator];
+                    let cVal = d[this.cIndicator];
+                    return ((xVal >= xMin)
+                        && (xVal <= xMax)
+                        && (yVal >= yMin)
+                        && (yVal <= yMax)
+                        && (cVal >= cMin)
+                        && (cVal <= cMax));
+                }))
+                .join('circle')
+                .transition(this.transition)
+                .attr('cx', d => xScale(d[this.xIndicator]))
+                .attr('cy', d => yScale(d[this.yIndicator]))
+                .attr('r', d => cScale(d[this.cIndicator]));
+        }
+
+        //set or unset css changes for count mode
+        this.svgGroup.selectAll('circle')
+            .classed('count-mode', () => yIndicator === 'count');
 
         // Shift circles to work with the x-axis on top
         if (this.xsec) {

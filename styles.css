@@ -96,6 +96,13 @@ h2 {
     margin: auto;
 }
 
+.textArea
+{
+    text-align: left;
+    text-anchor: middle;
+    margin-left: 25px;
+}
+
 .disabled
 {
     pointer-events: none;
@@ -136,5 +143,4 @@ h2 {
 {
     opacity: 1;
 }
-
 

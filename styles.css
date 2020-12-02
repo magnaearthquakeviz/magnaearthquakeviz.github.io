@@ -96,6 +96,13 @@ h2 {
     margin: auto;
 }
 
+.disabled
+{
+    pointer-events: none;
+    opacity: 0.6;
+    filter: grayscale(100%);
+}
+
 #panel4-1 circle
 {
     fill: cadetblue;

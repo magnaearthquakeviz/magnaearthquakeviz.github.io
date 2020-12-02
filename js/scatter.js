@@ -361,7 +361,7 @@ class Scatter {
      * @param label - Label for the dropdown, i.e. 'x-axis: '
      * @returns - d3 selection corresponding to the select element.
      */
-    addDropdown(div, axisOptions, label) {
+    addDropdown(div, axisOptions, label, dropdownName) {
 
 
         div.append('label')
@@ -369,7 +369,8 @@ class Scatter {
             .text(label);
 
         let ret = div.append('select')
-            .classed('form-control my-auto col-sm-3', true);
+            .classed('form-control my-auto col-sm-3', true)
+            .attr('id', `${this.panelID}-${dropdownName}`);
 
         ret.selectAll('option')
             .data(axisOptions)
@@ -396,15 +397,15 @@ class Scatter {
 
         let xRow = form.append('div')
             .classed(rowCommonClasses, true);
-        let xSelect = this.addDropdown(xRow, axisOptions, 'x-axis: ');
+        let xSelect = this.addDropdown(xRow, axisOptions, 'x-axis: ', 'x-dropdown');
 
         let yRow = form.append('div')
             .classed(rowCommonClasses, true);
-        let ySelect = this.addDropdown(yRow, axisOptions, 'y-axis: ');
+        let ySelect = this.addDropdown(yRow, axisOptions, 'y-axis: ', 'y-dropdown');
 
         let cRow = form.append('div')
             .classed(rowCommonClasses, true);
-        let cSelect = this.addDropdown(cRow, axisOptions, 'c-size ');
+        let cSelect = this.addDropdown(cRow, axisOptions, 'c-size ', 'c-dropdown');
 
         // Update dropdown values.
         xSelect.node().value = this.xIndicator;
@@ -439,7 +440,7 @@ class Scatter {
 
         let xRow = form.append('div')
             .classed(rowCommonClasses, true);
-        let xSelect = this.addDropdown(xRow, axisOptions, 'x-axis: ');
+        let xSelect = this.addDropdown(xRow, axisOptions, 'x-axis: ', 'x-dropdown');
         let xSlider = xRow.append('div')
             .classed(`${sliderCommonClasses} x-axis-slider`, true)
             .attr('id', `${this.panelID}-x-axis-slider`)
@@ -447,7 +448,12 @@ class Scatter {
 
         let yRow = form.append('div')
             .classed(rowCommonClasses, true);
-        let ySelect = this.addDropdown(yRow, axisOptions, 'y-axis: ');
+        // Add special 'count' option
+        let yAxisOptions = axisOptions;
+        if(!this.xsec) {
+            yAxisOptions = [...axisOptions, 'count']
+        }
+        let ySelect = this.addDropdown(yRow, yAxisOptions, 'y-axis: ', 'y-dropdown');
         let ySlider = yRow.append('div')
             .classed(`${sliderCommonClasses} y-axis-slider`, true)
             .attr('id', `${this.panelID}-y-axis-slider`);
@@ -456,7 +462,7 @@ class Scatter {
 
         let cRow = form.append('div')
             .classed(rowCommonClasses, true);
-        let cSelect = this.addDropdown(cRow, axisOptions, 'c-size: ');
+        let cSelect = this.addDropdown(cRow, axisOptions, 'c-size: ', 'c-dropdown');
         let cSlider = cRow.append('div')
             .classed(`${sliderCommonClasses} c-size-slider`, true)
             .attr('id', `${this.panelID}-c-size-slider`);
@@ -488,6 +494,22 @@ class Scatter {
      * If a range is specified, it uses the ranges to filter the elements displayed.
      */
     drawPlot(xIndicator, yIndicator, cIndicator, ranges = null) {
+        //Grey out (or restore) y indicator slider
+        let slider = d3.select(`${this.panel}-y-axis-slider`);
+        if (slider) {
+            slider.classed('disabled', () => yIndicator === 'count');
+        }
+
+        //Grey out (or restore) circle size dropdown and slider
+        let cDropdown = d3.select(`${this.panel}-c-dropdown`);
+        if (cDropdown) {
+            cDropdown.classed('disabled', () => yIndicator === 'count')
+        }
+        slider = d3.select(`${this.panel}-c-size-slider`);
+        if (slider) {
+            slider.classed('disabled', () => yIndicator === 'count');
+        }
+
         // Update indicators and sliders (if present)
         if (xIndicator !== this.xIndicator) {
             this.xIndicator = xIndicator;
@@ -499,10 +521,13 @@ class Scatter {
         }
         if (yIndicator !== this.yIndicator) {
             this.yIndicator = yIndicator;
-            let slider = d3.select(`${this.panel}-y-axis-slider`).node();
-            if (slider) {
-                slider.noUiSlider.destroy();
-                this.addSlider(slider, this.yIndicator);
+            // don't update the slider if 'count' was chosen
+            if (yIndicator !== 'count') {
+                let slider = d3.select(`${this.panel}-y-axis-slider`).node();
+                if (slider) {
+                    slider.noUiSlider.destroy();
+                    this.addSlider(slider, this.yIndicator);
+                }
             }
         }
         if (cIndicator !== this.cIndicator) {

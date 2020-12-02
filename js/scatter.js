@@ -68,6 +68,50 @@ class Scatter {
             .style('text-anchor', 'middle')
             .attr('transform', `translate(-30, ${this.vizHeight / 2}), rotate(270)`);
 
+        let legendGroup = d3.select(`${this.panel} > div.visArea`)
+            .append('div')
+            .append('svg')
+            .attr('width', this.width)
+            .attr('height', 80)
+            .append('g')
+            .attr('transform', `translate(${this.vizWidth / 2 - 75 + this.margin}, 0)`);
+
+
+        legendGroup.append('rect')
+            .attr('width', 150)
+            .attr('height', 70)
+            .attr('fill', 'lightgrey')
+            .attr('rx', 5)
+            .attr('opacity', 0.75);
+        legendGroup.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('x', 75)
+            .attr('y', 17)
+            .text('Legend');
+
+        let legendLowGroup = legendGroup.append('g')
+            .attr('transform', 'translate(40, 30)');
+        let legendHighGroup = legendGroup.append('g')
+            .attr('transform', 'translate(110, 30)');
+
+
+        this.legendLow = legendLowGroup.append('circle')
+            .classed('legend', true)
+            .attr('cx', 0)
+            .attr('cy', 0)
+            .attr('r', 3);
+        this.legendHigh = legendHighGroup.append('circle')
+            .classed('legend', true)
+            .attr('cx', 0)
+            .attr('cy', 0)
+            .attr('r', 3);
+        this.legendLowLabel = legendLowGroup.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('transform', 'translate(0, 25)');
+        this.legendHighLabel = legendHighGroup.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('transform', 'translate(0, 25)');
+
         if (this.xsec) {
             this.xAxis.attr('transform', `translate(0, ${this.margin})`);
             this.xAxisLabel.attr('transform', 'translate(' + (this.vizWidth / 2) + ',' + 0 + ')');
@@ -521,7 +565,7 @@ class Scatter {
             }
         }
 
-        cScale = d3.scaleSqrt().domain([cMin, cMax]).range([1, 4]);
+        cScale = d3.scaleSqrt().domain([cMin, cMax]).range([2, 5]);
 
         // Label axis
         this.xAxisLabel.text(this.xIndicator);
@@ -607,6 +651,23 @@ class Scatter {
                     .selectAll('title')
                     .remove();
             });
+
+
+        this.legendLow.transition(this.transition).attr('r', d => cScale(cMin));
+        this.legendHigh.transition(this.transition).attr('r', d => cScale(cMax));
+        if (cIndicator === 'time')
+        {
+            cMin = this.dateSliderFormatter.to(cMin);
+            cMax = this.dateSliderFormatter.to(cMax);
+        }
+        else
+        {
+            cMin = d3.format('.2f')(cMin);
+            cMax = d3.format('.2f')(cMax);
+        }
+        this.legendLowLabel.transition(this.transition).text(cMin);
+
+        this.legendHighLabel.transition(this.transition).text(cMax);
 
 
         //  TODO: Implement opacity scaling better or remove entirely.

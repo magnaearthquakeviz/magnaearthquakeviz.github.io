@@ -387,6 +387,7 @@ class Maps {
         // Followed example from class map tutorial page
         d3.select(this.panel)
             .style('height', '500px')
+            .style('width', '90%')
             .append('div').attr('id','googleMap');
 
         let mapContainer = d3.select('#googleMap').node();

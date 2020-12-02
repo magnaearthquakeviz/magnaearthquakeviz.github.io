@@ -604,7 +604,7 @@ class Scatter {
 
             for (let bin of binnedData) {
                 let midpoint = (bin.x1 + bin.x0) / 2;
-                newXData.push(new Date(midpoint));
+                newXData.push(midpoint);
                 newYData.push(bin.length);
                 newCData.push(5); //max-sized circles
             }

@@ -1,12 +1,12 @@
 /**Data structure for the data associated with an indiviudal earthquake */
 class PlotData {
     /**
-     * 
+     *
      * @param time - Origin time of the earthquake
      * @param lat - Latitude of the earthquake hypocenter
      * @param lon - Longitude of the earthquake hypocenter
      * @param depth - Depth of the earthquake hypocenter
-     * @param mag - Magnitude of the earthquake 
+     * @param mag - Magnitude of the earthquake
      */
     constructor(time, lat, lon, depth, mag, x) {
         this.time = time
@@ -21,12 +21,12 @@ class PlotData {
 /**Class represents the scatter plot view. */
 class Scatter {
     /**
-     * Creates a new Scatter Object for plotting a 2D scatter plot of earthquake information 
-     * 
+     * Creates a new Scatter Object for plotting a 2D scatter plot of earthquake information
+     *
      * @param quakeData - geoJson file of earthquake information
      * @param row - The row on the website to draw the plot
-     * @param column- The column on the website to draw the plot 
-     * @param xsec - Specifies if drawing a cross-section plot, which has the x-axis on the 
+     * @param column- The column on the website to draw the plot
+     * @param xsec - Specifies if drawing a cross-section plot, which has the x-axis on the
      *              top and the data includes position along the cross-section line
      */
     constructor(quakeData, row, column, xsec = false) {
@@ -39,7 +39,7 @@ class Scatter {
         this.quakeData = quakeData;
 
         // Set the plot data depending on the input data format
-        if (this.xsec){
+        if (this.xsec) {
             this.plotData = this.setXSecData(quakeData);
         } else {
             this.plotData = this.setScatterPlotData(quakeData);
@@ -68,18 +68,20 @@ class Scatter {
             .style('text-anchor', 'middle')
             .attr('transform', `translate(-30, ${this.vizHeight / 2}), rotate(270)`);
 
-        if(this.xsec){
+        if (this.xsec) {
             this.xAxis.attr('transform', `translate(0, ${this.margin})`);
             this.xAxisLabel.attr('transform', 'translate(' + (this.vizWidth / 2) + ',' + 0 + ')');
             this.yAxis.attr('transform', `translate(0, ${this.margin})`)
-        } else{
+        } else {
             this.xAxis.attr('transform', `translate(0, ${this.vizHeight})`);
             this.xAxisLabel.attr('transform', 'translate(' + (this.vizWidth / 2) + ',' + (this.vizHeight + this.margin - 10) + ')');
         }
 
-        this.transition = d3.transition()
-            .duration(750)
-            .ease(d3.easeCubicOut);
+        this.transition = function () {
+            return d3.transition()
+                .duration(750)
+                .ease(d3.easeCubicOut);
+        };
 
         this.xIndicator = '';
         this.yIndicator = '';
@@ -114,7 +116,7 @@ class Scatter {
 
     /**
      * Store the individal earthquake data as PlotData objects for easier access.
-     * @param data - Data passed in. Should follow the data format specified by quakeData 
+     * @param data - Data passed in. Should follow the data format specified by quakeData
      * for cross-sections.
      */
     setXSecData(data) {
@@ -316,12 +318,14 @@ class Scatter {
      * @returns - d3 selection corresponding to the select element.
      */
     addDropdown(div, axisOptions, label) {
+
+
         div.append('label')
-            .classed('col-sm-1 col-form-label', true)
+            .classed('mr-3 my-auto col-form-label', true)
             .text(label);
 
         let ret = div.append('select')
-            .classed('form-control col-sm-3', true);
+            .classed('form-control my-auto col-sm-3', true);
 
         ret.selectAll('option')
             .data(axisOptions)
@@ -344,16 +348,18 @@ class Scatter {
             .append('div')
             .append('form');
 
+        let rowCommonClasses = 'form-group form-row';
+
         let xRow = form.append('div')
-            .classed('form-group form-row', true);
+            .classed(rowCommonClasses, true);
         let xSelect = this.addDropdown(xRow, axisOptions, 'x-axis: ');
 
         let yRow = form.append('div')
-            .classed('form-group form-row', true);
+            .classed(rowCommonClasses, true);
         let ySelect = this.addDropdown(yRow, axisOptions, 'y-axis: ');
 
         let cRow = form.append('div')
-            .classed('form-group form-row', true);
+            .classed(rowCommonClasses, true);
         let cSelect = this.addDropdown(cRow, axisOptions, 'c-size ');
 
         // Update dropdown values.
@@ -381,30 +387,34 @@ class Scatter {
 
         let form = d3.select(this.panel)
             .append('div')
+            .classed('container-fluid', true)
             .append('form');
 
+        let rowCommonClasses = 'form-group row d-flex justify-content-center flex-row';
+        let sliderCommonClasses = 'col-md-5 my-auto ml-md-2 sliderDiv';
+
         let xRow = form.append('div')
-            .classed('form-group row', true);
+            .classed(rowCommonClasses, true);
         let xSelect = this.addDropdown(xRow, axisOptions, 'x-axis: ');
         let xSlider = xRow.append('div')
-            .classed('col-md-6 my-auto sliderDiv x-axis-slider', true)
+            .classed(`${sliderCommonClasses} x-axis-slider`, true)
             .attr('id', `${this.panelID}-x-axis-slider`)
         this.addSlider(xSlider.node(), this.xIndicator);
 
         let yRow = form.append('div')
-            .classed('form-group row', true);
+            .classed(rowCommonClasses, true);
         let ySelect = this.addDropdown(yRow, axisOptions, 'y-axis: ');
         let ySlider = yRow.append('div')
-            .classed('col-md-6 my-auto sliderDiv y-axis-slider', true)
+            .classed(`${sliderCommonClasses} y-axis-slider`, true)
             .attr('id', `${this.panelID}-y-axis-slider`);
         this.addSlider(ySlider.node(), this.yIndicator);
 
 
         let cRow = form.append('div')
-            .classed('form-group row', true);
-        let cSelect = this.addDropdown(cRow, axisOptions, 'c-size ');
+            .classed(rowCommonClasses, true);
+        let cSelect = this.addDropdown(cRow, axisOptions, 'c-size: ');
         let cSlider = cRow.append('div')
-            .classed('col-md-6 my-auto sliderDiv c-size-slider', true)
+            .classed(`${sliderCommonClasses} c-size-slider`, true)
             .attr('id', `${this.panelID}-c-size-slider`);
         this.addSlider(cSlider.node(), this.cIndicator);
 
@@ -504,10 +514,10 @@ class Scatter {
             yScale = d3.scaleTime().domain([yMin, yMax]).range([this.vizHeight, 0]); //.nice();
         } else {
             // flip the y-axis if drawing a cross-section
-            if (this.xsec){
-                yScale = d3.scaleLinear().domain([yMin, yMax]).range([0, this.vizHeight-this.margin]);
-            } else{
-                yScale = d3.scaleLinear().domain([yMin, yMax]).range([this.vizHeight, 0]); 
+            if (this.xsec) {
+                yScale = d3.scaleLinear().domain([yMin, yMax]).range([0, this.vizHeight - this.margin]);
+            } else {
+                yScale = d3.scaleLinear().domain([yMin, yMax]).range([this.vizHeight, 0]);
             }
         }
 
@@ -522,10 +532,10 @@ class Scatter {
         // Set up axis ticks
         let xAxisCall, yAxisCall;
         // draw the x-axis on top if drawing a cross-section
-        if (this.xsec){
+        if (this.xsec) {
             xAxisCall = d3.axisTop(xScale);
             yAxisCall = d3.axisLeft(yScale);
-        } else{
+        } else {
             xAxisCall = d3.axisBottom(xScale);
             yAxisCall = d3.axisLeft(yScale);
         }
@@ -544,9 +554,10 @@ class Scatter {
         // Transform to margin
         this.svgGroup.attr("transform", `translate(${this.margin}, ${this.margin})`);
 
-
         // TODO: Implement opacity scaling better or remove entirely.
         let opacityScale = d3.scaleLinear().domain([cMin, cMax]).range([0.3, 1]);
+
+        let that = this;
 
         // Draw points; filter to slider values if applicable
         let circles = this.svgGroup.selectAll('circle')
@@ -568,9 +579,36 @@ class Scatter {
             .attr('r', d => cScale(d[this.cIndicator]));
 
         // Shift circles to work with the x-axis on top
-        if(this.xsec){
+        if (this.xsec) {
             circles.attr("transform", `translate(0, ${this.margin})`)
         }
+
+        this.svgGroup.selectAll('circle')
+            .on('mouseenter', function () {
+                let selected = d3.select(this);
+
+                that.svgGroup.selectAll('circle')
+                    .classed('unfocused', true);
+
+                selected.classed('unfocused', false)
+                    .classed('focused', true);
+
+                selected.append('title')
+                    .text(`Date: ${that.dateSliderFormatter.to(selected.datum().time)}\n`
+                        + `Coordinates: (${selected.datum().lat}, ${selected.datum().lon})\n`
+                        + `Magnitude: ${selected.datum().mag}\n`
+                        + `Depth: ${selected.datum().depth}`);
+            })
+            .on('mouseleave', function () {
+                that.svgGroup.selectAll('circle')
+                    .classed('unfocused focused', false);
+
+                d3.select(this)
+                    .selectAll('title')
+                    .remove();
+            });
+
+
         //  TODO: Implement opacity scaling better or remove entirely.
         //  .attr('opacity', d => opacityScale(d[this.cIndicator]));
     }

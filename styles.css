@@ -4,7 +4,7 @@
     right: 0px;
     top: 33%;
     margin: auto;
-    opacity: 33%;
+    opacity: 0.5;
     transition: opacity 0.5s;
 }
 
@@ -19,6 +19,12 @@ html {
 body{
     font-family: "Roboto";
     position: relative;
+    /*margin-right: 150px;*/
+}
+
+/* Used to get body off of navbar */
+#width-limiter{
+    margin-right: 150px;
 }
 
 cite{
@@ -83,6 +89,13 @@ h2 {
     font-size: 22px;
 }
 
+.visArea
+{
+    text-align: center;
+    text-anchor: middle;
+    margin: auto;
+}
+
 #panel4-1 circle
 {
     fill: cadetblue;
@@ -90,3 +103,15 @@ h2 {
     stroke: black;
     stroke-width: 0.25px;
 }
+
+#panel4-1 circle.focused, circle.focused
+{
+    opacity: 1;
+    stroke-width: 1px;
+}
+
+#panel4-1 circle.unfocused, circle.unfocused
+{
+    opacity: 0.25;
+}
+

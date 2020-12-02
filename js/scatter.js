@@ -84,7 +84,8 @@ class Scatter {
             .attr('width', this.width)
             .attr('height', 80)
             .append('g')
-            .attr('transform', `translate(${this.vizWidth / 2 - 75 + this.margin}, 0)`);
+            .attr('transform', `translate(${this.vizWidth / 2 - 75 + this.margin}, 0)`)
+            .classed('legend', () => true);
 
 
         legendGroup.append('rect')
@@ -782,6 +783,12 @@ class Scatter {
         this.legendLowLabel.transition(this.transition).text(cMin);
 
         this.legendHighLabel.transition(this.transition).text(cMax);
+
+        // Hide the circle legend when in count mode
+        d3.select(`${this.panel} g.legend`)
+            .classed('hidden', () => yIndicator === 'count')
+            .transition(this.transition);
+
 
 
         //  TODO: Implement opacity scaling better or remove entirely.

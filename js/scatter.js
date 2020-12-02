@@ -19,10 +19,12 @@ class PlotData {
 }
 
 class CountPlotData {
-    constructor(xVal, yVal, cVal) {
+    constructor(xVal, yVal, cVal, x0, x1) {
         this.xVal = xVal;
         this.yVal = yVal;
         this.cVal = cVal;
+        this.x0 = x0;
+        this.x1 = x1;
     }
 }
 
@@ -166,10 +168,10 @@ class Scatter {
         return data;
     }
 
-    setCountData(xAxisData, yAxisData, cAxisData) {
+    setCountData(xAxisData, yAxisData, cAxisData, binStarts, binEnds) {
         let data = [];
         for (let i = 0; i < xAxisData.length; i++) {
-            data.push(new CountPlotData(xAxisData[i], yAxisData[i], cAxisData[i]));
+            data.push(new CountPlotData(xAxisData[i], yAxisData[i], cAxisData[i], binStarts[i], binEnds[i]));
         }
 
         return data;
@@ -590,10 +592,11 @@ class Scatter {
             }
         }
 
+        let binnedData;
         // Bin the data if the y-axis parameter is 'count'
         if (yIndicator === 'count') {
             let binGenerator = d3.bin().thresholds(50);
-            let binnedData = binGenerator(xData.filter(d => {
+            binnedData = binGenerator(xData.filter(d => {
                 return ((d.valueOf() >= xMin)
                     && (d.valueOf() <= xMax));
             }));
@@ -679,7 +682,9 @@ class Scatter {
         let circles;
         if (yIndicator === 'count') {
             // link the new data set
-            let countData = this.setCountData(xData, yData, cData);
+            let binStarts = binnedData.map(d => d.x0);
+            let binEnds = binnedData.map(d => d.x1);
+            let countData = this.setCountData(xData, yData, cData, binStarts, binEnds);
             circles = this.svgGroup.selectAll('circle')
                 .data(countData.filter(d => {
                     return ((d.xVal >= xMin)
@@ -734,11 +739,23 @@ class Scatter {
                 selected.classed('unfocused', false)
                     .classed('focused', true);
 
-                selected.append('title')
-                    .text(`Date: ${that.dateSliderFormatter.to(selected.datum().time)}\n`
-                        + `Coordinates: (${selected.datum().lat}, ${selected.datum().lon})\n`
-                        + `Magnitude: ${selected.datum().mag}\n`
-                        + `Depth: ${selected.datum().depth}`);
+                if (yIndicator === 'count') {
+                    let binStart = selected.datum().x0;
+                    let binEnd = selected.datum().x1;
+                    if (xIndicator === 'time') {
+                        binStart = that.dateSliderFormatter.to(new Date(binStart));
+                        binEnd = that.dateSliderFormatter.to(new Date(binEnd));
+                    }
+                    selected.append('title')
+                        .text(`Count: ${selected.datum().yVal}\n`
+                            + `Bin Range: [${binStart}, ${binEnd}]`);
+                } else {
+                    selected.append('title')
+                        .text(`Date: ${that.dateSliderFormatter.to(selected.datum().time)}\n`
+                            + `Coordinates: (${selected.datum().lat}, ${selected.datum().lon})\n`
+                            + `Magnitude: ${selected.datum().mag}\n`
+                            + `Depth: ${selected.datum().depth}`);
+                }
             })
             .on('mouseleave', function () {
                 that.svgGroup.selectAll('circle')

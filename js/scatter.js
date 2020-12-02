@@ -569,10 +569,34 @@ class Scatter {
         let cMin = d3.min(cData);
         let cMax = d3.max(cData);
 
+        let xScale, yScale, cScale;
+
+        // Adjust ranges to slider values if applicable
+        if (ranges) {
+            if (ranges[0]) {
+                let xRanges = ranges[0];
+                xMin = xRanges[0];
+                xMax = xRanges[1];
+            }
+            if (ranges[1]) {
+                let yRanges = ranges[1];
+                yMin = yRanges[0];
+                yMax = yRanges[1];
+            }
+            if (ranges[2]) {
+                let cRanges = ranges[2];
+                cMin = cRanges[0];
+                cMax = cRanges[1];
+            }
+        }
+
         // Bin the data if the y-axis parameter is 'count'
         if (yIndicator === 'count') {
             let binGenerator = d3.bin().thresholds(50);
-            let binnedData = binGenerator(xData);
+            let binnedData = binGenerator(xData.filter(d => {
+                return ((d.valueOf() >= xMin)
+                    && (d.valueOf() <= xMax));
+            }));
 
             let newXData = [];
             let newYData = [];
@@ -594,27 +618,6 @@ class Scatter {
             xData = newXData;
             yData = newYData;
             cData = newCData;
-        }
-
-        let xScale, yScale, cScale;
-
-        // Adjust ranges to slider values if applicable
-        if (ranges) {
-            if (ranges[0]) {
-                let xRanges = ranges[0];
-                xMin = xRanges[0];
-                xMax = xRanges[1];
-            }
-            if (ranges[1]) {
-                let yRanges = ranges[1];
-                yMin = yRanges[0];
-                yMax = yRanges[1];
-            }
-            if (ranges[2]) {
-                let cRanges = ranges[2];
-                cMin = cRanges[0];
-                cMax = cRanges[1];
-            }
         }
 
         // Set up scales

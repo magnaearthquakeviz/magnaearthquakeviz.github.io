@@ -96,6 +96,23 @@ h2 {
     margin: auto;
 }
 
+.disabled
+{
+    pointer-events: none;
+    opacity: 0.6;
+    filter: grayscale(100%);
+}
+
+.hidden
+{
+    opacity: 0;
+}
+
+#panel4-1 circle.count-mode
+{
+    opacity: 0.7;
+}
+
 #panel4-1 circle
 {
     fill: cadetblue;
@@ -114,4 +131,10 @@ h2 {
 {
     opacity: 0.25;
 }
+
+#panel4-1 circle.legend
+{
+    opacity: 1;
+}
+
 

@@ -18,6 +18,16 @@ class PlotData {
     }
 }
 
+class CountPlotData {
+    constructor(xVal, yVal, cVal, x0, x1) {
+        this.xVal = xVal;
+        this.yVal = yVal;
+        this.cVal = cVal;
+        this.x0 = x0;
+        this.x1 = x1;
+    }
+}
+
 /**Class represents the scatter plot view. */
 class Scatter {
     /**
@@ -68,6 +78,51 @@ class Scatter {
             .style('text-anchor', 'middle')
             .attr('transform', `translate(-30, ${this.vizHeight / 2}), rotate(270)`);
 
+        let legendGroup = d3.select(`${this.panel} > div.visArea`)
+            .append('div')
+            .append('svg')
+            .attr('width', this.width)
+            .attr('height', 80)
+            .append('g')
+            .attr('transform', `translate(${this.vizWidth / 2 - 75 + this.margin}, 0)`)
+            .classed('legend', () => true);
+
+
+        legendGroup.append('rect')
+            .attr('width', 150)
+            .attr('height', 70)
+            .attr('fill', 'lightgrey')
+            .attr('rx', 5)
+            .attr('opacity', 0.75);
+        legendGroup.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('x', 75)
+            .attr('y', 17)
+            .text('Legend');
+
+        let legendLowGroup = legendGroup.append('g')
+            .attr('transform', 'translate(40, 30)');
+        let legendHighGroup = legendGroup.append('g')
+            .attr('transform', 'translate(110, 30)');
+
+
+        this.legendLow = legendLowGroup.append('circle')
+            .classed('legend', true)
+            .attr('cx', 0)
+            .attr('cy', 0)
+            .attr('r', 3);
+        this.legendHigh = legendHighGroup.append('circle')
+            .classed('legend', true)
+            .attr('cx', 0)
+            .attr('cy', 0)
+            .attr('r', 3);
+        this.legendLowLabel = legendLowGroup.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('transform', 'translate(0, 25)');
+        this.legendHighLabel = legendHighGroup.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('transform', 'translate(0, 25)');
+
         if (this.xsec) {
             this.xAxis.attr('transform', `translate(0, ${this.margin})`);
             this.xAxisLabel.attr('transform', 'translate(' + (this.vizWidth / 2) + ',' + 0 + ')');
@@ -99,7 +154,7 @@ class Scatter {
     }
 
     /**
-     * Store the individal earthquake data as PlotData objects for easier access
+     * Store the individual earthquake data as PlotData objects for easier access
      * @param data - Data passed in. Should follow the data format specified by quakeData
      * for general scatter plots.
      */
@@ -114,8 +169,17 @@ class Scatter {
         return data;
     }
 
+    setCountData(xAxisData, yAxisData, cAxisData, binStarts, binEnds) {
+        let data = [];
+        for (let i = 0; i < xAxisData.length; i++) {
+            data.push(new CountPlotData(xAxisData[i], yAxisData[i], cAxisData[i], binStarts[i], binEnds[i]));
+        }
+
+        return data;
+    }
+
     /**
-     * Store the individal earthquake data as PlotData objects for easier access.
+     * Store the individual earthquake data as PlotData objects for easier access.
      * @param data - Data passed in. Should follow the data format specified by quakeData
      * for cross-sections.
      */
@@ -317,7 +381,7 @@ class Scatter {
      * @param label - Label for the dropdown, i.e. 'x-axis: '
      * @returns - d3 selection corresponding to the select element.
      */
-    addDropdown(div, axisOptions, label) {
+    addDropdown(div, axisOptions, label, dropdownName) {
 
 
         div.append('label')
@@ -325,7 +389,8 @@ class Scatter {
             .text(label);
 
         let ret = div.append('select')
-            .classed('form-control my-auto col-sm-3', true);
+            .classed('form-control my-auto col-sm-3', true)
+            .attr('id', `${this.panelID}-${dropdownName}`);
 
         ret.selectAll('option')
             .data(axisOptions)
@@ -352,15 +417,15 @@ class Scatter {
 
         let xRow = form.append('div')
             .classed(rowCommonClasses, true);
-        let xSelect = this.addDropdown(xRow, axisOptions, 'x-axis: ');
+        let xSelect = this.addDropdown(xRow, axisOptions, 'x-axis: ', 'x-dropdown');
 
         let yRow = form.append('div')
             .classed(rowCommonClasses, true);
-        let ySelect = this.addDropdown(yRow, axisOptions, 'y-axis: ');
+        let ySelect = this.addDropdown(yRow, axisOptions, 'y-axis: ', 'y-dropdown');
 
         let cRow = form.append('div')
             .classed(rowCommonClasses, true);
-        let cSelect = this.addDropdown(cRow, axisOptions, 'c-size ');
+        let cSelect = this.addDropdown(cRow, axisOptions, 'c-size ', 'c-dropdown');
 
         // Update dropdown values.
         xSelect.node().value = this.xIndicator;
@@ -395,7 +460,7 @@ class Scatter {
 
         let xRow = form.append('div')
             .classed(rowCommonClasses, true);
-        let xSelect = this.addDropdown(xRow, axisOptions, 'x-axis: ');
+        let xSelect = this.addDropdown(xRow, axisOptions, 'x-axis: ', 'x-dropdown');
         let xSlider = xRow.append('div')
             .classed(`${sliderCommonClasses} x-axis-slider`, true)
             .attr('id', `${this.panelID}-x-axis-slider`)
@@ -403,7 +468,12 @@ class Scatter {
 
         let yRow = form.append('div')
             .classed(rowCommonClasses, true);
-        let ySelect = this.addDropdown(yRow, axisOptions, 'y-axis: ');
+        // Add special 'count' option
+        let yAxisOptions = axisOptions;
+        if(!this.xsec) {
+            yAxisOptions = [...axisOptions, 'count']
+        }
+        let ySelect = this.addDropdown(yRow, yAxisOptions, 'y-axis: ', 'y-dropdown');
         let ySlider = yRow.append('div')
             .classed(`${sliderCommonClasses} y-axis-slider`, true)
             .attr('id', `${this.panelID}-y-axis-slider`);
@@ -412,7 +482,7 @@ class Scatter {
 
         let cRow = form.append('div')
             .classed(rowCommonClasses, true);
-        let cSelect = this.addDropdown(cRow, axisOptions, 'c-size: ');
+        let cSelect = this.addDropdown(cRow, axisOptions, 'c-size: ', 'c-dropdown');
         let cSlider = cRow.append('div')
             .classed(`${sliderCommonClasses} c-size-slider`, true)
             .attr('id', `${this.panelID}-c-size-slider`);
@@ -444,6 +514,22 @@ class Scatter {
      * If a range is specified, it uses the ranges to filter the elements displayed.
      */
     drawPlot(xIndicator, yIndicator, cIndicator, ranges = null) {
+        //Grey out (or restore) y indicator slider
+        let slider = d3.select(`${this.panel}-y-axis-slider`);
+        if (slider) {
+            slider.classed('disabled', () => yIndicator === 'count');
+        }
+
+        //Grey out (or restore) circle size dropdown and slider
+        let cDropdown = d3.select(`${this.panel}-c-dropdown`);
+        if (cDropdown) {
+            cDropdown.classed('disabled', () => yIndicator === 'count')
+        }
+        slider = d3.select(`${this.panel}-c-size-slider`);
+        if (slider) {
+            slider.classed('disabled', () => yIndicator === 'count');
+        }
+
         // Update indicators and sliders (if present)
         if (xIndicator !== this.xIndicator) {
             this.xIndicator = xIndicator;
@@ -455,10 +541,13 @@ class Scatter {
         }
         if (yIndicator !== this.yIndicator) {
             this.yIndicator = yIndicator;
-            let slider = d3.select(`${this.panel}-y-axis-slider`).node();
-            if (slider) {
-                slider.noUiSlider.destroy();
-                this.addSlider(slider, this.yIndicator);
+            // don't update the slider if 'count' was chosen
+            if (yIndicator !== 'count') {
+                let slider = d3.select(`${this.panel}-y-axis-slider`).node();
+                if (slider) {
+                    slider.noUiSlider.destroy();
+                    this.addSlider(slider, this.yIndicator);
+                }
             }
         }
         if (cIndicator !== this.cIndicator) {
@@ -504,6 +593,37 @@ class Scatter {
             }
         }
 
+        let binnedData;
+        // Bin the data if the y-axis parameter is 'count'
+        if (yIndicator === 'count') {
+            let binGenerator = d3.bin().thresholds(50);
+            binnedData = binGenerator(xData.filter(d => {
+                return ((d.valueOf() >= xMin)
+                    && (d.valueOf() <= xMax));
+            }));
+
+            let newXData = [];
+            let newYData = [];
+            let newCData = [];
+
+            for (let bin of binnedData) {
+                let midpoint = (bin.x1 + bin.x0) / 2;
+                newXData.push(midpoint);
+                newYData.push(bin.length);
+                newCData.push(5); //max-sized circles
+            }
+            //recalculate mins and maxes
+            yMin = d3.min(newYData);
+            yMax = d3.max(newYData);
+            cMin = 1;
+            cMax = 5;
+
+            //set new data
+            xData = newXData;
+            yData = newYData;
+            cData = newCData;
+        }
+
         // Set up scales
         if (this.xIndicator === 'time') {
             xScale = d3.scaleTime().domain([xMin, xMax]).range([0, this.vizWidth]); //.nice();
@@ -521,7 +641,7 @@ class Scatter {
             }
         }
 
-        cScale = d3.scaleSqrt().domain([cMin, cMax]).range([1, 4]);
+        cScale = d3.scaleSqrt().domain([cMin, cMax]).range([2, 5]);
 
         // Label axis
         this.xAxisLabel.text(this.xIndicator);
@@ -560,23 +680,50 @@ class Scatter {
         let that = this;
 
         // Draw points; filter to slider values if applicable
-        let circles = this.svgGroup.selectAll('circle')
-            .data(this.plotData.filter(d => {
-                let xVal = d[this.xIndicator];
-                let yVal = d[this.yIndicator];
-                let cVal = d[this.cIndicator];
-                return ((xVal >= xMin)
-                    && (xVal <= xMax)
-                    && (yVal >= yMin)
-                    && (yVal <= yMax)
-                    && (cVal >= cMin)
-                    && (cVal <= cMax));
-            }))
-            .join('circle')
-            .transition(this.transition)
-            .attr('cx', d => xScale(d[this.xIndicator]))
-            .attr('cy', d => yScale(d[this.yIndicator]))
-            .attr('r', d => cScale(d[this.cIndicator]));
+        let circles;
+        if (yIndicator === 'count') {
+            // link the new data set
+            let binStarts = binnedData.map(d => d.x0);
+            let binEnds = binnedData.map(d => d.x1);
+            let countData = this.setCountData(xData, yData, cData, binStarts, binEnds);
+            circles = this.svgGroup.selectAll('circle')
+                .data(countData.filter(d => {
+                    return ((d.xVal >= xMin)
+                        && (d.xVal <= xMax)
+                        && (d.yVal >= yMin)
+                        && (d.yVal <= yMax)
+                        && (d.cVal >= cMin)
+                        && (d.cVal <= cMax))
+                }))
+                .join('circle')
+                .transition(this.transition)
+                .attr('cx', d => xScale(d.xVal))
+                .attr('cy', d => yScale(d.yVal))
+                .attr('r', d => cScale(d.cVal));
+
+        } else {
+            circles = this.svgGroup.selectAll('circle')
+                .data(this.plotData.filter(d => {
+                    let xVal = d[this.xIndicator];
+                    let yVal = d[this.yIndicator];
+                    let cVal = d[this.cIndicator];
+                    return ((xVal >= xMin)
+                        && (xVal <= xMax)
+                        && (yVal >= yMin)
+                        && (yVal <= yMax)
+                        && (cVal >= cMin)
+                        && (cVal <= cMax));
+                }))
+                .join('circle')
+                .transition(this.transition)
+                .attr('cx', d => xScale(d[this.xIndicator]))
+                .attr('cy', d => yScale(d[this.yIndicator]))
+                .attr('r', d => cScale(d[this.cIndicator]));
+        }
+
+        //set or unset css changes for count mode
+        this.svgGroup.selectAll('circle')
+            .classed('count-mode', () => yIndicator === 'count');
 
         // Shift circles to work with the x-axis on top
         if (this.xsec) {
@@ -593,11 +740,23 @@ class Scatter {
                 selected.classed('unfocused', false)
                     .classed('focused', true);
 
-                selected.append('title')
-                    .text(`Date: ${that.dateSliderFormatter.to(selected.datum().time)}\n`
-                        + `Coordinates: (${selected.datum().lat}, ${selected.datum().lon})\n`
-                        + `Magnitude: ${selected.datum().mag}\n`
-                        + `Depth: ${selected.datum().depth}`);
+                if (yIndicator === 'count') {
+                    let binStart = selected.datum().x0;
+                    let binEnd = selected.datum().x1;
+                    if (xIndicator === 'time') {
+                        binStart = that.dateSliderFormatter.to(new Date(binStart));
+                        binEnd = that.dateSliderFormatter.to(new Date(binEnd));
+                    }
+                    selected.append('title')
+                        .text(`Count: ${selected.datum().yVal}\n`
+                            + `Bin Range: [${binStart}, ${binEnd}]`);
+                } else {
+                    selected.append('title')
+                        .text(`Date: ${that.dateSliderFormatter.to(selected.datum().time)}\n`
+                            + `Coordinates: (${selected.datum().lat}, ${selected.datum().lon})\n`
+                            + `Magnitude: ${selected.datum().mag}\n`
+                            + `Depth: ${selected.datum().depth}`);
+                }
             })
             .on('mouseleave', function () {
                 that.svgGroup.selectAll('circle')
@@ -607,6 +766,29 @@ class Scatter {
                     .selectAll('title')
                     .remove();
             });
+
+
+        this.legendLow.transition(this.transition).attr('r', d => cScale(cMin));
+        this.legendHigh.transition(this.transition).attr('r', d => cScale(cMax));
+        if (cIndicator === 'time')
+        {
+            cMin = this.dateSliderFormatter.to(cMin);
+            cMax = this.dateSliderFormatter.to(cMax);
+        }
+        else
+        {
+            cMin = d3.format('.2f')(cMin);
+            cMax = d3.format('.2f')(cMax);
+        }
+        this.legendLowLabel.transition(this.transition).text(cMin);
+
+        this.legendHighLabel.transition(this.transition).text(cMax);
+
+        // Hide the circle legend when in count mode
+        d3.select(`${this.panel} g.legend`)
+            .classed('hidden', () => yIndicator === 'count')
+            .transition(this.transition);
+
 
 
         //  TODO: Implement opacity scaling better or remove entirely.

@@ -189,6 +189,14 @@ h3 {
     stroke-width: 0.25px;
 }
 
+.magnitude-circle
+{
+    fill: cadetblue;
+    opacity: 0.8;
+    stroke: black;
+    stroke-width: 0.25px;
+}
+
 #panel5-2 circle
 {
     fill: cadetblue;

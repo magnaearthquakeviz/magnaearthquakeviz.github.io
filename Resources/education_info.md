@@ -50,9 +50,11 @@
 ## Seismic Moment 
 * Seismic Moment (M0) relates directly to the size of an earthquake
    * M0 = (shear modulus)*(displacement)*(fault surface area)
-* This is the ideal way to measure the size of an earthquake because it is related to physical properties but it can be hard to calculate
+* This is the ideal way to measure the size of an earthquake because it is related 
+  to physical properties but it can be hard to calculate
 *  Is approximately proportional to the average radiated seismic energy (Shearer)
-* The moment magnitude Mw relates M0 to another magnitude (Ms) based on the amplitude of seismic waves (Lay and Wallace)
+* The moment magnitude Mw relates M0 to another magnitude (Ms) based on the amplitude 
+  of seismic waves (Lay and Wallace)
    * Mw = (⅔)*logM0-6.07 - (Udías et al.14; Shearer 284) 
    * A unit increase in magnitude is ~ 32 times increase in moment/energy (Shearer)
    * Energy difference of 2 magnitudes: 10^(1.5*(M2-M1)) 
@@ -78,4 +80,15 @@ https://www.usgs.gov/natural-hazards/earthquake-hazards/science/earthquake-magni
 Lay, T., & Wallace, T. C. (1995). Modern global seismology. San Diego: Acad. Press.  
 Udías, A., Madariaga, R., & Buforn, E. (2014). Source mechanisms of earthquakes: Theory and practice. Cambridge: Cambridge University Press.  
 Shearer, P. M. (2009). Introduction to Seismology (2nd ed.). London: Cambridge University Press.  
-Pang, G., Koper, K. D., Mesimeri, M., Pankow, K. L., Baker, B., & Farrell, J., et al. (2020). Seismic analysis of the 2020 Magna, Utah, earthquake sequence: Evidence for a listric Wasatch fault. ​Geophysical Research Letters​, 47,e2020GL089798.  
+Pang, G., Koper, K. D., Mesimeri, M., Pankow, K. L., Baker, B., & Farrell, J., et al. (2020). Seismic analysis of the 2020 Magna, Utah, earthquake sequence: Evidence for a listric Wasatch fault. ​Geophysical Research Letters​, 47,e2020GL089798.
+
+
+
+
+
+
+## Magna earthquake data:
+  shear modulus = 3.3*10 N/m^2
+  area = 16km^2 
+  displacement = 0.28 m
+  

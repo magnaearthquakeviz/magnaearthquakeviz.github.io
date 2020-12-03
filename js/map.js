@@ -16,7 +16,7 @@ class Maps {
         this.width = this.height = 500;
         // seismometer size
         this.stationSymbolSize = 40;
-        // Google Map Setttings
+        // Google Map Settings
         this.mainshockLoc = {lat: 40.751, lng: -112.078};
         this.googleZoom = 10.5;
 

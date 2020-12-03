@@ -32,6 +32,8 @@ Promise.all([outline, quakes, lakes, faults, stations, feltReports, xsec, google
 
     let scatter41 = new Scatter(combinedData[1], 4, 1);
     scatter41.drawPlot('time', 'mag', 'depth');
+    let widget42 = new Widget(4, 2);
+    widget42.drawWidget();
 
     //scatter41.addDropdowns(axisOptions);
     //scatter41.addSliders(['time', 'mag']);

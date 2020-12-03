@@ -46,8 +46,10 @@ class Widget {
 
         let moment = shearModulus * area * displacement;
         let momentMagnitude = (2/3) * Math.log10(moment) - 6.07;
-        if (momentMagnitude < 0)
+        console.log(momentMagnitude);
+        if (momentMagnitude < 0) {
             return 1;
+        }
 
         let radius = Math.sqrt(momentMagnitude / Math.PI);
         return radius;

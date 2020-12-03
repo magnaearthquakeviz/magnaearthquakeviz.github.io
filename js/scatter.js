@@ -377,7 +377,6 @@ class Scatter {
 
             this.addSlider(sliderDiv, sliderValue);
         }
-
     }
 
     /**

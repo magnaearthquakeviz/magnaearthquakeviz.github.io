@@ -5,8 +5,24 @@
 - [Andrew Golightly](mailto:andrew.golightly@utah.edu "andrew.golightly@utah.edu")
 - [Guy Watson](mailto:guy.watson@utah.edu "guy.watson@utah.edu")
 
+## [Project Website](https://magnaearthquakeviz.github.io)
+
 ## Project Overview
-We hope to create an effective and informative visualisation centered around the 2020 Magna Earthquake Sequence and the resulting aftershocks. In the aftermath of this earthquake, social media and the news were filled with misinformation and confusion about aftershocks, possibilites of a larger earthquake, and other similar items. We plan to create our visualisation as a way to explain and reduce many of the worries people have during earthquakes and their aftershocks by analyzing the Magna Sequence and its many aftershocks. 
+We hope to create an effective and informative visualisation centered around the 2020 Magna Earthquake Sequence and the resulting aftershocks. In the aftermath of this earthquake, social media and the news were filled with misinformation and confusion about aftershocks, possibilities of a larger earthquake, and other similar items. We plan to create our visualisation as a way to explain and reduce many of the worries people have during earthquakes and their aftershocks by analyzing the Magna Sequence and its many aftershocks. 
+
+## Repository Structure
+- css: folder containing all the CSS used
+    - external: folder containing all the external CSS libraries used
+    - styles.css: custom CSS that we defined for the project
+- Data: folder containing all the data used for generating the visualisations
+- Documentation: folder containing all the documentation generated throughout the lifecycle of this project
+- js: folder containing all the JS used
+    - external: folder containing all the external JS libraries used
+    - map.js: file used to draw map visualisations
+    - scatter.js: file used to draw scatterplot visualisations
+    - script.js: file used to initialize map and scatterplot visualisations and assign them to their correct sections
+- index.html: file containing base HTML for the website 
+- README.md: file containing project overview and additional information
 
 ## Documentation
 - [Project Proposal](./Documentation/MagnaEarthquakeProject.pdf)

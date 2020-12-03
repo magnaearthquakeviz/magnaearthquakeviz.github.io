@@ -11,19 +11,19 @@ Created by:
     <title>Understanding the Magna Earthquake Sequence</title>
 
     <!--d3.js-->
-    <script src="js/external/http_d3js.org_d3.v5.js"></script>
-    <script src="js/external/http_d3js.org_d3-array.v2.js"></script>
-    <script src="js/external/http_d3js.org_d3-geo-projection.v2.js"></script>
+    <script src="js/external/http_d3js.org_d3.v5.js" defer></script>
+    <script src="js/external/http_d3js.org_d3-array.v2.js" defer></script>
+    <script src="js/external/http_d3js.org_d3-geo-projection.v2.js" defer></script>
 
     <!--JQuery-->
-    <script src="js/external/http_code.jquery.com_jquery-3.5.1.slim.js"></script>
+    <script src="js/external/http_code.jquery.com_jquery-3.5.1.slim.js" defer></script>
 
     <!--Bootstrap-->
-    <script src="js/external/http_cdn.jsdelivr.net_npm_bootstrap@4.5.3_dist_js_bootstrap.bundle.js"></script>
+    <script src="js/external/http_cdn.jsdelivr.net_npm_bootstrap@4.5.3_dist_js_bootstrap.bundle.js" defer></script>
     <link rel="stylesheet" href="css/external/http_cdn.jsdelivr.net_npm_bootstrap@4.5.3_dist_css_bootstrap.css">
 
     <!--NoUISlider-->
-    <script src="js/external/http_cdnjs.cloudflare.com_ajax_libs_noUiSlider_14.6.3_nouislider.js"></script>
+    <script src="js/external/http_cdnjs.cloudflare.com_ajax_libs_noUiSlider_14.6.3_nouislider.js" defer></script>
     <link rel="stylesheet" href="css/external/http_cdnjs.cloudflare.com_ajax_libs_noUiSlider_14.6.3_nouislider.css">
 
     <!--Roboto Text-->
@@ -32,22 +32,24 @@ Created by:
     <!--Custom CSS-->
     <link rel="stylesheet" href="css/styles.css">
 
+    <!--Google Maps API-->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdZBzeAmb_E28mKtSIVFHEA9xSJoIGzM0" defer></script>
+
     <!--Custom Scripts-->
     <script src="js/script.js" defer></script>
     <script src="js/map.js" defer></script>
     <script src="js/scatter.js" defer></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdZBzeAmb_E28mKtSIVFHEA9xSJoIGzM0"></script>
 </head>
 <body data-spy="scroll" data-target=".navbar">
 
 <div class="navbar nav flex-column btn-group-vertical m-auto ml-1" id="panel_navigator">
-    <a class="nav-link btn btn-outline-secondary btn-sm" href="#panel1sec">Introduction</a>
-    <a class="nav-link btn btn-outline-secondary btn-sm" href="#panel2sec">Intensity</a>
-    <a class="nav-link btn btn-outline-secondary btn-sm" href="#panel3sec">Aftershocks</a>
-    <a class="nav-link btn btn-outline-secondary btn-sm" href="#panel4sec">Magnitude</a>
-    <a class="nav-link btn btn-outline-secondary btn-sm" href="#panel5sec">Depth</a>
-    <a class="nav-link btn btn-outline-secondary btn-sm" href="#panel6sec">Demo</a>
-    <a class="nav-link btn btn-outline-secondary btn-sm" href="#panel7sec">References</a>
+    <a class="nav-link btn btn-outline-secondary btn-sm" href="#intro">Introduction</a>
+    <a class="nav-link btn btn-outline-secondary btn-sm" href="#intensity">Intensity</a>
+    <a class="nav-link btn btn-outline-secondary btn-sm" href="#aftershocks">Aftershocks</a>
+    <a class="nav-link btn btn-outline-secondary btn-sm" href="#magnitude">Magnitude</a>
+    <a class="nav-link btn btn-outline-secondary btn-sm" href="#depth">Depth</a>
+    <a class="nav-link btn btn-outline-secondary btn-sm" href="#demo">Demo</a>
+    <a class="nav-link btn btn-outline-secondary btn-sm" href="#refs">References</a>
 </div>
 
 <div class="jumbotron" id="titleArea">
@@ -57,7 +59,7 @@ Created by:
 
 <div id="width-limiter">
     <div class="container-fluid">
-        <section id="panel1sec">
+        <section id="intro">
             <div class="row no-gutters" id="panel1">
                 <div class="col" id="panel1-1">
                     <div class="textArea">
@@ -84,7 +86,7 @@ Created by:
             </div>
         </section>
         <br/>
-        <section id="panel2sec">
+        <section id="intensity">
             <div class="row no-gutters" id="panel2">
                 <div class="col-6" id="panel2-1">
                     <div class="visArea">
@@ -123,7 +125,7 @@ Created by:
             </div>
         </section>
         <br/>
-        <section id="panel3sec">
+        <section id="aftershocks">
             <div class="row no-gutters" id="panel3">
                 <div class="col-6" id="panel3-1">
                     <div class="textArea">
@@ -153,7 +155,7 @@ Created by:
             </div>
         </section>
         <br/>
-        <section id="panel4sec">
+        <section id="magnitude">
             <div class="row no-gutters" id="panel4">
                 <div class="col-6" id="panel4-1">
                     <div class="visArea">
@@ -193,7 +195,7 @@ Created by:
             </div>
         </section>
         <br/>
-        <section id="panel5sec">
+        <section id="depth">
             <div class="row no-gutters" id="panel5">
                 <div class="col-6" id="panel5-1">
                     <div class="textArea">
@@ -221,7 +223,7 @@ Created by:
             </div>
         </section>
         <br/>
-        <section id="panel6sec">
+        <section id="demo">
             <div id="panel6">
                 <div class="row d-flex justify-content-center">
                     <p>
@@ -239,7 +241,7 @@ Created by:
                 </div>
             </div>
         </section>
-        <section id="panel7sec">
+        <section id="refs">
             <div class="row no-gutters" id="panel7">
                 <div class="col-6" id="panel7-1">
                     <div class="textArea" id="references">

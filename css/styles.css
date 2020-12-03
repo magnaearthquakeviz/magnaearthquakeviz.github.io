@@ -19,7 +19,6 @@ html {
 body{
     font-family: "Roboto";
     position: relative;
-    /*margin-right: 150px;*/
 }
 
 /* Used to get body off of navbar */
@@ -40,7 +39,7 @@ section
 {
     height: 100vh;
     width: 100%;
-    padding-top: 10px;
+    padding-top: 25px;
 }
 
 path
@@ -71,8 +70,19 @@ path
     stroke-width: 2px;
 }
 
-#googleMap {
+.googleMap {
     height: 100%;
+}
+
+.map-marker{
+    position: absolute;
+}
+
+.map-marker svg {
+    width: 60px;
+    height: 20px;
+    font: 10px sans-serif;
+    position: absolute;
 }
 
 .map-quakes{
@@ -80,6 +90,50 @@ path
 }
 
 .map-quakes svg {
+    width: 60px;
+    height: 20px;
+    font: 10px sans-serif;
+    position: absolute;
+}
+
+.map-stations{
+    position: absolute;
+}
+
+.map-stations svg {
+    width: 60px;
+    height: 20px;
+    font: 10px sans-serif;
+    position: absolute;
+}
+
+.map-felt{
+    position: absolute;
+}
+
+.map-felt svg {
+    width: 60px;
+    height: 20px;
+    font: 10px sans-serif;
+    position: absolute;
+}
+
+.map-faults{
+    position: absolute;
+}
+
+.map-faults svg {
+    width: 60px;
+    height: 20px;
+    font: 10px sans-serif;
+    position: absolute;
+}
+
+.map-mainq{
+    position: absolute;
+}
+
+.map-mainq svg {
     width: 60px;
     height: 20px;
     font: 10px sans-serif;

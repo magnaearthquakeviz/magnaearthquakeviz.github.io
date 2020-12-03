@@ -122,6 +122,14 @@ h2 {
     stroke-width: 0.25px;
 }
 
+.magnitude-circle
+{
+    fill: cadetblue;
+    opacity: 0.8;
+    stroke: black;
+    stroke-width: 0.25px;
+}
+
 #panel4-1 circle.focused, circle.focused
 {
     opacity: 1;

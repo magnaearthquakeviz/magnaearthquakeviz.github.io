@@ -23,6 +23,23 @@ class Widget {
         d3.select(`#panel${row}-${column}`).append('div')
             .classed('visArea', true);
         this.panel = `#panel${row}-${column} > div.visArea`;
+        this.svg = d3.select(this.panel)
+            .append('svg')
+            .attr('width', 400)
+            .attr('height', 200);
+        this.svgGroup = this.svg.append('g')
+        this.svgGroup.append('circle')
+            .attr('cx', 250)
+            .attr('cy', 100)
+            .attr('r', 10)
+            .classed('magnitude-circle', true);
+        this.svgGroup.append('text')
+            .text('Magnitude: --')
+            .attr('x', 100)
+            .attr('y', 100)
+            .attr('text-anchor', 'left')
+            .classed('magnitude-text', true);
+
 
         this.addWidgetSliders();
 
@@ -35,25 +52,31 @@ class Widget {
         let currentArea = +d3.select(`#${this.panelID}-area-slider`).node().noUiSlider.get();
         let currentDisplacement = +d3.select(`#${this.panelID}-displacement-slider`).node().noUiSlider.get();
 
-        let radius = this.calculateRadius(this.magnaShearModulus, currentArea, currentDisplacement);
+        let magnitude = this.calculateMagnitude(this.magnaShearModulus, currentArea, currentDisplacement)
+        let radius = this.calculateRadius(magnitude);
+
+        this.svgGroup.select('circle')
+            .transition()
+            .attr('r', radius);
+        this.svgGroup.select('text')
+            .text(`Magnitude: ${magnitude.toFixed(2)}`)
 
 
         let derp = 0;
     }
 
-    calculateRadius(shearModulus, area, displacement) {
-        // First calculate the magnitude
-
-
-        let areaInMeters = area*1000
+    calculateMagnitude(shearModulus, area, displacement) {
+        let areaInMeters = area * 1000 * 1000
         let moment = shearModulus * areaInMeters * displacement;
-        let momentMagnitude = (2/3) * Math.log10(moment) - 6.07;
-        console.log(momentMagnitude);
-        if (momentMagnitude < 0) {
-            return 1;
-        }
+        let momentMagnitude = (2 / 3) * Math.log10(moment) - 6.07;
 
-        let radius = Math.sqrt(momentMagnitude / Math.PI);
+        return momentMagnitude;
+    }
+
+    calculateRadius(magnitude) {
+        if (magnitude < 0)
+            return 1;
+        let radius = 20 ** (Math.sqrt(magnitude / Math.PI));
         return radius;
     }
 

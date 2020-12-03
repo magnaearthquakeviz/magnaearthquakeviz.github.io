@@ -160,11 +160,11 @@ h3 {
 }
 
 .highlight-text{
-    color:red;
+    text-decoration: underline;
 }
 
 .slide{
-    background-color: #bbb;
+    background-color: lightgrey;
     height: 350px;
     padding: 20px;
 }

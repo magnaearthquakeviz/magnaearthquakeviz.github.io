@@ -44,7 +44,9 @@ class Widget {
     calculateRadius(shearModulus, area, displacement) {
         // First calculate the magnitude
 
-        let moment = shearModulus * area * displacement;
+
+        let areaInMeters = area*1000
+        let moment = shearModulus * areaInMeters * displacement;
         let momentMagnitude = (2/3) * Math.log10(moment) - 6.07;
         console.log(momentMagnitude);
         if (momentMagnitude < 0) {

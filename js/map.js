@@ -28,6 +28,8 @@ class Maps {
         this.stationData = combinedData[4];
         this.feltReportData = combinedData[5];
         
+        console.log(this.quakeData)
+        
         // Filter felt report data to be in Utah Boundaries
         this.filteredFeltReports = this.feltReportData.features.filter(d => {
             let lat = +d.geometry.coordinates[1]
@@ -462,7 +464,7 @@ class Maps {
                         let selected = d3.select(this);
                         selected.attr('stroke-width', '1px');
                         selected.selectAll('title').remove();
-                    })
+                    });
         
                 //transforms the markers to the right
                 // lat / lng using the projection from google maps

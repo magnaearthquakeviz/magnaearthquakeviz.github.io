@@ -89,6 +89,10 @@ h2 {
     font-size: 22px;
 }
 
+h3 {
+    font-size: 16px;
+}
+
 .visArea
 {
     text-align: center;
@@ -144,3 +148,17 @@ h2 {
     opacity: 1;
 }
 
+.highlight-text{
+    color:red;
+}
+
+.slide{
+    background-color: #bbb;
+    height: 300px;
+}
+
+.carousel-item{
+    padding-left: 60px;
+    padding-right: 60px;
+    padding-top: 10px;
+}

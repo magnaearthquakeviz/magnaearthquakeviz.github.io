@@ -19,7 +19,7 @@
 ## Magna Earthquake Sequence
 * The mainshock was a M5.7
 * 11.9 km below sea level, 13.2 km beneath the surface
-* This is the largest earthquake recorded on seismic instruments in Utah 
+* This is the largest earthquake occuring on the Wasatch Fault System to be recorded on seismic instruments 
 * No serious injuries or fatalities 
 * Estimated damage is greater than $150 million 
 * For a circular rupture the fault radius is 2.3 km, fault area is 16 km2 , average slip is 0.28 m, and stress drop is 8.3 MPa. 

@@ -151,6 +151,14 @@ class Scatter {
                 return Date.parse(value);
             }
         }
+
+        this.nameMapper = {'time' : 'Time',
+            'mag' : 'Magnitude',
+            'depth' : 'Depth',
+            'lat' : 'Latitude',
+            'lon' : 'Longitude',
+            'count' : 'Count',
+            'x' : 'Distance along cross-section'}
     }
 
     /**
@@ -394,7 +402,7 @@ class Scatter {
         ret.selectAll('option')
             .data(axisOptions)
             .join('option')
-            .text(d => d)
+            .text(d => this.nameMapper[d])
             .attr('value', d => d);
 
         return ret;

@@ -1,5 +1,5 @@
 /**
- * Class representing the map view.
+ * Class representing the map view. 
  */
 class Maps {
     /**
@@ -27,7 +27,7 @@ class Maps {
         this.faultData = combinedData[3];
         this.stationData = combinedData[4];
         this.feltReportData = combinedData[5];
-
+        
         // Filter felt report data to be in Utah Boundaries
         this.filteredFeltReports = this.feltReportData.features.filter(d => {
             let lat = +d.geometry.coordinates[1]
@@ -43,19 +43,19 @@ class Maps {
         this.magnitudeScale = d3.scaleSqrt()
             .domain(d3.extent(magnitudeArray))
             .range([0.01, 5]);
-
+    
         // Color scale for intensity 
         this.intensityColorScale = d3.scaleLinear()
             .domain([1, 7.5])
             .range(['yellow', 'red'])
-
+    
         this.projection = d3.geoConicConformal()
             .parallels([40 + 43 / 60, 41 + 47 / 60])
             .rotate([111 + 30 / 60, 0])
             .fitSize([this.width, this.height], this.outlineData);
-
+    
         this.path = d3.geoPath().projection(this.projection);
-
+        
         this.panel = '#panel' + row + '-' + column + ' > div.visArea';
         this.panelID = `panel${row}-${column}`;
 
@@ -116,7 +116,7 @@ class Maps {
             .data(faultsFiltered)
             .join('path')
             .attr('d', this.path)
-            .attr('class', 'fault')``
+            .attr('class', 'fault')
             .on('mouseenter', function () {
                 let selected = d3.select(this);
                 selected.append('title')
@@ -129,12 +129,12 @@ class Maps {
     }
 
     /**
-     * Create checkboxes for seismometer and felt report intensity data.
-     * Default is seismometers checked.
+     * Create checkboxes for seismometer and felt report intensity data. 
+     * Default is seismometers checked. 
      */
     addIntensityData(svg) {
         // add a group element for the intensity
-        this.svg.append('g').attr('id', 'intensityG');
+        this.svg.append('g').attr('id', 'intensityG')
 
         // create a form element 
         let form = d3.select(this.panel).append('form');
@@ -308,8 +308,6 @@ class Maps {
         // Selects the events the day of
         let quakeDataFiltered = this.quakeData.features.filter(d => (d.properties.time > 1584489600000 && d.properties.time < 1584576000000) && d.properties.mag > 2.0);
 
-        console.log(quakeDataFiltered);
-
         // Group for earthquakes
         this.svg.append('g')
             .attr('id', 'quakeG')
@@ -351,9 +349,9 @@ class Maps {
      */
     addMainShock(svg) {
         let mainQuake = this.quakeData.features[d3.maxIndex(this.quakeData.features, d => d.properties.mag)];
-        let star = d3.symbol().type(d3.symbolStar).size(150)
-
-        let g = this.svg.select('#mainShockG')
+        let star = d3.symbol().type(d3.symbolStar).size(150);
+        
+        let g = this.svg.select('#mainShockG');
         if (g.empty()) {
             g = this.svg.append('g').attr('id', 'mainShockG')
         }
@@ -558,13 +556,9 @@ class Maps {
         // Add text box explaining markers
         // Followed this example: https://developers.google.com/maps/documentation/javascript/infowindows
         const contentAString =
-            '<div id="content">' +
-            '<div id="siteNotice">' +
-            "</div>" +
-            '<div id="bodyContent">' +
-            "<p> Start of the cross-section line used in Panel 4.</p>" +
-            "</div>" +
-            "</div>";
+        '<div id="Amarker content">' +
+        "<p> Start of the cross-section line used in Panel 4.</p>" +
+        "</div>";
 
         const infowindowA = new google.maps.InfoWindow({
             content: contentAString,
@@ -574,13 +568,9 @@ class Maps {
         });
 
         const contentBString =
-            '<div id="content">' +
-            '<div id="siteNotice">' +
-            "</div>" +
-            '<div id="bodyContent">' +
-            "<p> End of the cross-section line used in Panel 4.</p>" +
-            "</div>" +
-            "</div>";
+        '<div id="Bmarker content">' +
+        "<p> End of the cross-section line used in Panel 4.</p>" +
+        "</div>";
 
         const infowindowB = new google.maps.InfoWindow({
             content: contentBString,

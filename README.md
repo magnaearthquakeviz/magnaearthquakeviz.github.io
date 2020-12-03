@@ -27,6 +27,8 @@ We hope to create an effective and informative visualisation centered around the
 ## Documentation
 - [Project Proposal](./Documentation/MagnaEarthquakeProject.pdf)
 - [Feedback Exercise](./Documentation/feedback_exercise.md)
+- [Project Review Feedback](./Documentation/TAMeeting11-18-20.md)
+- [Process Book](./Documentation/ProcessBook.pdf)
 
 ## Data
 - [Individual Earthquake Data](https://earthquake.usgs.gov/earthquakes/search/): Downloaded earthquakes near Magna, UT from 18 March 2020 - 04 November 2020

@@ -87,7 +87,9 @@ path
 }
 
 h2 {
-    font-size: 22px;
+    font-size: 26px;
+    text-align: center;
+    font: bold;
 }
 
 h3 {
@@ -133,6 +135,14 @@ h3 {
     stroke-width: 0.25px;
 }
 
+#panel5-2 circle
+{
+    fill: cadetblue;
+    opacity: 0.4;
+    stroke: black;
+    stroke-width: 0.25px;
+}
+
 #panel4-1 circle.focused, circle.focused
 {
     opacity: 1;
@@ -155,7 +165,8 @@ h3 {
 
 .slide{
     background-color: #bbb;
-    height: 300px;
+    height: 350px;
+    padding: 20px;
 }
 
 .carousel-item{

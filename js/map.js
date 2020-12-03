@@ -27,9 +27,7 @@ class Maps {
         this.faultData = combinedData[3];
         this.stationData = combinedData[4];
         this.feltReportData = combinedData[5];
-        
-        console.log(this.quakeData)
-        
+                
         // Filter felt report data to be in Utah Boundaries
         this.filteredFeltReports = this.feltReportData.features.filter(d => {
             let lat = +d.geometry.coordinates[1]
